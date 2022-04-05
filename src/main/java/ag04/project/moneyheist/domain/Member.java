@@ -23,7 +23,8 @@ public class Member {
     private Skill mainSkill;
     private MemberStatus memberStatus;
 
-    public Member(String name, Character sex, String email, Set<Skill> skills, Skill mainSkill, MemberStatus memberStatus) {
+    public Member(Long id, String name, Character sex, String email, Set<Skill> skills, Skill mainSkill, MemberStatus memberStatus) {
+        this.id = id;
         this.name = name;
         this.sex = sex;
         this.email = email;
@@ -34,6 +35,14 @@ public class Member {
 
     public Member() {
 
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
