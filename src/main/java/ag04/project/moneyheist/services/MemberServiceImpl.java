@@ -8,6 +8,7 @@ import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.repositories.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -24,6 +25,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberDTO addMember(MemberCommand memberCommand) {
         Member memberToAdd = memberCommandToMember.convert(memberCommand);
         Member savedMember = memberRepository.save(memberToAdd);

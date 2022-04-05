@@ -4,6 +4,14 @@ public class SkillCommand {
     private String name;
     private String level;
 
+    public SkillCommand(String name, String level) {
+        this.name = name;
+        this.level = level;
+    }
+
+    public SkillCommand() {
+    }
+
     public String getName() {
         return name;
     }

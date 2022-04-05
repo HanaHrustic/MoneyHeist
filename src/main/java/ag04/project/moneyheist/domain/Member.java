@@ -13,7 +13,7 @@ public class Member {
     private Character sex;
     private String email;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "skill_member", joinColumns = {@JoinColumn(name = "member_id")},
             inverseJoinColumns = {@JoinColumn(name = "skill_id")})
     private Set<Skill> skills;
@@ -21,6 +21,8 @@ public class Member {
     @ManyToOne(optional = true)
     @JoinColumn(name = "main_skill")
     private Skill mainSkill;
+
+    @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
     public Member(Long id, String name, Character sex, String email, Set<Skill> skills, Skill mainSkill, MemberStatus memberStatus) {

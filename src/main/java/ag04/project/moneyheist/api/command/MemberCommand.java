@@ -9,8 +9,20 @@ public class MemberCommand {
     private Character sex;
     private String email;
     private Set<SkillCommand> skills;
-    private Skill mainSkill;
+    private String mainSkill;
     private String status;
+
+    public MemberCommand(String name, Character sex, String email, Set<SkillCommand> skills, String mainSkill, String status) {
+        this.name = name;
+        this.sex = sex;
+        this.email = email;
+        this.skills = skills;
+        this.mainSkill = mainSkill;
+        this.status = status;
+    }
+
+    public MemberCommand() {
+    }
 
     public String getName() {
         return name;
@@ -44,11 +56,11 @@ public class MemberCommand {
         this.skills = skills;
     }
 
-    public Skill getMainSkill() {
+    public String getMainSkill() {
         return mainSkill;
     }
 
-    public void setMainSkill(Skill mainSkill) {
+    public void setMainSkill(String mainSkill) {
         this.mainSkill = mainSkill;
     }
 

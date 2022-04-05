@@ -15,7 +15,8 @@ public class Skill {
     private String name;
     private String level;
 
-    public Skill(String name, String level) {
+    public Skill(Long id, String name, String level) {
+        this.id = id;
         this.name = name;
         this.level = level;
     }

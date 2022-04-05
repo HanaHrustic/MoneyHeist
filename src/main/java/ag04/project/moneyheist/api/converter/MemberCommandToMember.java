@@ -27,7 +27,7 @@ public class MemberCommandToMember implements Converter<MemberCommand, Member>{
         member.setSex(source.getSex());
         member.setEmail(source.getEmail());
         member.setSkills(source.getSkills().stream().map(skillCommandToSkill::convert).collect(Collectors.toSet()));
-        member.setMainSkill(source.getMainSkill());
+        member.setMainSkill(member.getSkills().stream().filter(skill -> skill.getName().equals(source.getMainSkill())).findFirst().orElse(null));
         member.setMemberStatus(MemberStatus.valueOf(source.getStatus()));
 
         return member;
