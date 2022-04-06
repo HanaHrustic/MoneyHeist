@@ -59,4 +59,9 @@ public class MemberServiceImpl implements MemberService {
 
         return memberToMemberDTO.convert(savedMember);
     }
+
+    @Override
+    public boolean isDuplicateEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
 }

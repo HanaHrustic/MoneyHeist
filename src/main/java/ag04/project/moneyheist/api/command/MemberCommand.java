@@ -1,9 +1,13 @@
 package ag04.project.moneyheist.api.command;
 
+import ag04.project.moneyheist.annotations.EmailDuplicate;
+import ag04.project.moneyheist.annotations.SkillNameDuplicate;
+
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
-import java.util.Set;
+import java.util.List;
 
 public class MemberCommand {
     private String name;
@@ -12,14 +16,16 @@ public class MemberCommand {
     private String sex;
 
     @Email
+    @EmailDuplicate
     private String email;
 
     @Valid
-    private Set<SkillCommand> skills;
+    @SkillNameDuplicate
+    private List<SkillCommand> skills;
     private String mainSkill;
     private String status;
 
-    public MemberCommand(String name, String sex, String email, Set<SkillCommand> skills, String mainSkill, String status) {
+    public MemberCommand(String name, String sex, String email, List<SkillCommand> skills, String mainSkill, String status) {
         this.name = name;
         this.sex = sex;
         this.email = email;
@@ -55,11 +61,11 @@ public class MemberCommand {
         this.email = email;
     }
 
-    public Set<SkillCommand> getSkills() {
+    public List<SkillCommand> getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<SkillCommand> skills) {
+    public void setSkills(List<SkillCommand> skills) {
         this.skills = skills;
     }
 
