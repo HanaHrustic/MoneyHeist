@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class MemberCommandToMember implements Converter<MemberCommand, Member>{
+    private final SkillCommandToMemberSkill skillCommandToMemberSkill;
     private final SkillCommandToSkill skillCommandToSkill;
 
     @Autowired
-    public MemberCommandToMember(SkillCommandToSkill skillCommandToSkill) {
+    public MemberCommandToMember(SkillCommandToMemberSkill skillCommandToMemberSkill, SkillCommandToSkill skillCommandToSkill) {
+        this.skillCommandToMemberSkill = skillCommandToMemberSkill;
         this.skillCommandToSkill = skillCommandToSkill;
     }
 
@@ -26,9 +28,10 @@ public class MemberCommandToMember implements Converter<MemberCommand, Member>{
         member.setName(source.getName());
         member.setSex(source.getSex());
         member.setEmail(source.getEmail());
-        member.setSkills(source.getSkills().stream().map(skillCommandToSkill::convert).collect(Collectors.toSet()));
-        member.setMainSkill(member.getSkills().stream().filter(skill -> skill.getName().equals(source.getMainSkill())).findFirst().orElse(null));
+        member.setMemberSkill(source.getSkills().stream().map(skillCommandToMemberSkill::convert).map(memberSkill -> {memberSkill.setMember(member); return memberSkill;}).collect(Collectors.toSet()));
+        member.setMainSkill(source.getSkills().stream().filter(skill -> skill.getName().equals(source.getMainSkill())).map(skillCommandToSkill::convert).findFirst().orElse(null));
         member.setMemberStatus(MemberStatus.valueOf(source.getStatus()));
+
 
         return member;
     }

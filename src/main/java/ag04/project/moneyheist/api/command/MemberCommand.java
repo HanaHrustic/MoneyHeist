@@ -1,18 +1,25 @@
 package ag04.project.moneyheist.api.command;
 
-import ag04.project.moneyheist.domain.Skill;
-
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 public class MemberCommand {
     private String name;
-    private Character sex;
+
+    @Pattern(regexp = "M|F")
+    private String sex;
+
+    @Email
     private String email;
+
+    @Valid
     private Set<SkillCommand> skills;
     private String mainSkill;
     private String status;
 
-    public MemberCommand(String name, Character sex, String email, Set<SkillCommand> skills, String mainSkill, String status) {
+    public MemberCommand(String name, String sex, String email, Set<SkillCommand> skills, String mainSkill, String status) {
         this.name = name;
         this.sex = sex;
         this.email = email;
@@ -32,11 +39,11 @@ public class MemberCommand {
         this.name = name;
     }
 
-    public Character getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(Character sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 

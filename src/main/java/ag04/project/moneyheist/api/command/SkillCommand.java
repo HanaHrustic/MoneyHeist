@@ -1,7 +1,12 @@
 package ag04.project.moneyheist.api.command;
 
+import javax.validation.constraints.Pattern;
+
 public class SkillCommand {
+
     private String name;
+
+    @Pattern(regexp = "^[*]{1,10}$")
     private String level;
 
     public SkillCommand(String name, String level) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -23,7 +24,7 @@ public class MemberController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveMember(@RequestBody MemberCommand memberCommand){
+    public ResponseEntity<Void> saveMember(@Valid @RequestBody MemberCommand memberCommand){
         MemberDTO savedMember = memberService.addMember(memberCommand);
 
         return ResponseEntity.created(URI.create("/member/" + savedMember.getId().toString())).build();

@@ -1,24 +1,25 @@
 package ag04.project.moneyheist.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Skill {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
-    private String level;
 
-    public Skill(Long id, String name, String level) {
+    @OneToMany(mappedBy = "skill")
+    private Set<MemberSkill> memberSkill = new HashSet<MemberSkill>();
+
+    public Skill(Long id, String name, Set<MemberSkill> memberSkill) {
         this.id = id;
         this.name = name;
-        this.level = level;
+        this.memberSkill = memberSkill;
     }
 
     public Skill() {
@@ -33,11 +34,34 @@ public class Skill {
         this.name = name;
     }
 
-    public String getLevel() {
-        return level;
+    public Long getId() {
+        return id;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<MemberSkill> getMemberSkill() {
+        return memberSkill;
+    }
+
+    public void setMemberSkill(Set<MemberSkill> skills) {
+        this.memberSkill = skills;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Skill skill = (Skill) o;
+
+        return name != null ? name.equals(skill.name) : skill.name == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 }

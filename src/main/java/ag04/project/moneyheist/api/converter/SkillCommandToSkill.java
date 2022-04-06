@@ -14,7 +14,6 @@ public class SkillCommandToSkill implements Converter<SkillCommand, Skill> {
         }
         final Skill skill = new Skill();
         skill.setName(source.getName());
-        skill.setLevel(source.getLevel());
 
         return skill;
     }

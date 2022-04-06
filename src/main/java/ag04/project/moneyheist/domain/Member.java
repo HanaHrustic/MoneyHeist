@@ -1,6 +1,7 @@
 package ag04.project.moneyheist.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -10,13 +11,12 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Character sex;
+
+    private String sex;
     private String email;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "skill_member", joinColumns = {@JoinColumn(name = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name = "skill_id")})
-    private Set<Skill> skills;
+    @OneToMany(mappedBy = "member")
+    private Set<MemberSkill> memberSkill = new HashSet<>();
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "main_skill")
@@ -25,12 +25,12 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
-    public Member(Long id, String name, Character sex, String email, Set<Skill> skills, Skill mainSkill, MemberStatus memberStatus) {
+    public Member(Long id, String name, String sex, String email, Set<MemberSkill> memberSkill, Skill mainSkill, MemberStatus memberStatus) {
         this.id = id;
         this.name = name;
         this.sex = sex;
         this.email = email;
-        this.skills = skills;
+        this.memberSkill = memberSkill;
         this.mainSkill = mainSkill;
         this.memberStatus = memberStatus;
     }
@@ -55,11 +55,11 @@ public class Member {
         this.name = name;
     }
 
-    public Character getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(Character sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
@@ -69,14 +69,6 @@ public class Member {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Set<Skill> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set<Skill> skills) {
-        this.skills = skills;
     }
 
     public Skill getMainSkill() {
@@ -93,5 +85,13 @@ public class Member {
 
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
+    }
+
+    public Set<MemberSkill> getMemberSkill() {
+        return memberSkill;
+    }
+
+    public void setMemberSkill(Set<MemberSkill> skills) {
+        this.memberSkill = skills;
     }
 }
