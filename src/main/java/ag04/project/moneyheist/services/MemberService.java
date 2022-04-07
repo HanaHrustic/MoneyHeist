@@ -10,4 +10,6 @@ public interface MemberService {
     boolean isDuplicateEmail(String email);
 
     void updateMember(MemberCommand memberCommand, Long memberId);
+
+    void deleteMemberSkill(Long memberId, String skillName);
 }
