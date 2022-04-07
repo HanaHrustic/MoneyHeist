@@ -2,27 +2,34 @@ package ag04.project.moneyheist.api.command;
 
 import ag04.project.moneyheist.annotations.EmailDuplicate;
 import ag04.project.moneyheist.annotations.SkillNameDuplicate;
+import ag04.project.moneyheist.api.group.CreateMember;
+import ag04.project.moneyheist.api.group.UpdateMemberSkill;
 
 import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import java.util.List;
 
 public class MemberCommand {
+    @Null(groups = UpdateMemberSkill.class)
     private String name;
 
-    @Pattern(regexp = "M|F")
+    @Null(groups = UpdateMemberSkill.class)
+    @Pattern(regexp = "M|F", groups = CreateMember.class)
     private String sex;
 
-    @Email
-    @EmailDuplicate
+    @Null(groups = UpdateMemberSkill.class)
+    @Email(groups = CreateMember.class)
+    @EmailDuplicate(groups = CreateMember.class)
     private String email;
 
     @Valid
-    @SkillNameDuplicate
+    @SkillNameDuplicate(groups = {CreateMember.class, UpdateMemberSkill.class})
     private List<SkillCommand> skills;
     private String mainSkill;
+
+    @Null(groups = UpdateMemberSkill.class)
     private String status;
 
     public MemberCommand(String name, String sex, String email, List<SkillCommand> skills, String mainSkill, String status) {

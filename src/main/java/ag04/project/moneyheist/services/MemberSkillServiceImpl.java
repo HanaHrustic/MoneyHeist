@@ -1,11 +1,8 @@
 package ag04.project.moneyheist.services;
 
 import ag04.project.moneyheist.domain.Member;
-import ag04.project.moneyheist.domain.Skill;
 import ag04.project.moneyheist.repositories.MemberSkillRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class MemberSkillServiceImpl implements MemberSkillService {
@@ -17,7 +14,7 @@ public class MemberSkillServiceImpl implements MemberSkillService {
     }
 
     @Override
-    public void save(Member member, List<Skill> skills) {
+    public void save(Member member) {
         memberSkillRepository.saveAll(member.getMemberSkill());
     }
 }

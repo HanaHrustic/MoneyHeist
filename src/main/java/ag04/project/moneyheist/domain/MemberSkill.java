@@ -47,4 +47,19 @@ public class MemberSkill {
     public void setSkillLevel(String skillLevel) {
         this.skillLevel = skillLevel;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MemberSkill that = (MemberSkill) o;
+
+        return skill != null ? skill.equals(that.skill) : that.skill == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return skill != null ? skill.hashCode() : 0;
+    }
 }

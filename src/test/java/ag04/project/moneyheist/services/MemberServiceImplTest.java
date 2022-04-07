@@ -65,7 +65,7 @@ class MemberServiceImplTest {
         memberService.addMember(memberCommand);
 
         verify(memberRepository, times(1)).save(any());
-        verify(memberSkillService, times(1)).save(any(), any());
+        verify(memberSkillService, times(1)).save(any());
         verify(skillService, times(1)).saveAllSkills(any());
         verify(skillService, times(1)).findSkillByName(any());
     }

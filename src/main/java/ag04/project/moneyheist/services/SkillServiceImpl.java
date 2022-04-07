@@ -30,10 +30,10 @@ public class SkillServiceImpl implements SkillService {
     public List<Skill> saveAllSkills(List<Skill> skills) {
         List<Skill> existingSkills = skillRepository.findAllByNameIn(skills.stream().map(Skill::getName).collect(Collectors.toList()));
 
-        List<Skill> list = new ArrayList<>();
-        Iterable<Skill> skill = skillRepository.saveAll(skills.stream().filter(skill1 -> !existingSkills.contains(skill1)).collect(Collectors.toList()));
-        skill.forEach(list::add);
+        List<Skill> newSkills = new ArrayList<>();
+        Iterable<Skill> skillsNotInRepo = skillRepository.saveAll(skills.stream().filter(skill1 -> !existingSkills.contains(skill1)).collect(Collectors.toList()));
+        skillsNotInRepo.forEach(newSkills::add);
 
-        return Stream.concat(list.stream(), existingSkills.stream()).toList();
+        return Stream.concat(newSkills.stream(), existingSkills.stream()).toList();
     }
 }
