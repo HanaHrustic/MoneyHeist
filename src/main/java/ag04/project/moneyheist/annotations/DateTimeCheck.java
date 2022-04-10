@@ -5,11 +5,11 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Target({ElementType.FIELD})
-@Constraint(validatedBy = NameValidator.class)
+@Target({ElementType.TYPE})
+@Constraint(validatedBy = DateTimeValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NameDuplicate {
-    String message() default "Must be unique!";
+public @interface DateTimeCheck {
+    String message() default "";
 
     Class<?>[] groups() default {};
 

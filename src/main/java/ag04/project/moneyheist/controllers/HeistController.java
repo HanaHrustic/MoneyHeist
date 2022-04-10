@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -23,7 +24,7 @@ public class HeistController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveHeist(@RequestBody HeistCommand heistCommand) {
+    public ResponseEntity<Void> saveHeist(@Valid @RequestBody HeistCommand heistCommand) {
         HeistDTO savedHeist = heistService.addHeist(heistCommand);
 
         return ResponseEntity.created(URI.create("/heist/" + savedHeist.getId().toString())).build();

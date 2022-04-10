@@ -1,17 +1,23 @@
 package ag04.project.moneyheist.api.command;
 
+import ag04.project.moneyheist.annotations.DateTimeCheck;
 import ag04.project.moneyheist.annotations.NameDuplicate;
+import ag04.project.moneyheist.annotations.SkillNameDuplicate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@DateTimeCheck
 public class HeistCommand {
 
     @NameDuplicate
     private String name;
+
     private String location;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    @SkillNameDuplicate(considerSkillLevel = true)
     private List<SkillCommand> skills;
 
     public HeistCommand(String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<SkillCommand> skills) {

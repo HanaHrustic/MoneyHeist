@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.domain.Heist;
 import ag04.project.moneyheist.repositories.HeistSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,5 +12,10 @@ public class HeistSkillServiceImpl implements HeistSkillService {
     @Autowired
     public HeistSkillServiceImpl(HeistSkillRepository heistSkillRepository) {
         this.heistSkillRepository = heistSkillRepository;
+    }
+
+    @Override
+    public void save(Heist heist) {
+        heistSkillRepository.saveAll(heist.getHeistSkills());
     }
 }
