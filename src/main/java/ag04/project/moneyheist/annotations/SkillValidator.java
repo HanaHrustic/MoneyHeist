@@ -11,14 +11,22 @@ import java.util.List;
 @Component
 public class SkillValidator implements ConstraintValidator<SkillNameDuplicate, List<SkillCommand>> {
 
+    private boolean considerSkillLevel;
+
     @Override
     public void initialize(SkillNameDuplicate constraintAnnotation) {
+        this.considerSkillLevel = constraintAnnotation.considerSkillLevel();
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(List<SkillCommand> value, ConstraintValidatorContext context) {
-        List<String> listSkillName = value.stream().map(SkillCommand::getName).map(String::toLowerCase).toList();
-        return listSkillName.stream().filter(i -> Collections.frequency(listSkillName, i) > 1).toList().size() <= 0;
+        if (considerSkillLevel) {
+            return value.stream().peek(skillCommand -> skillCommand.setName(skillCommand.getName().toLowerCase()))
+                    .filter(i -> Collections.frequency(value, i) > 1).toList().size() <= 0;
+        } else {
+            List<String> listSkillName = value.stream().map(SkillCommand::getName).map(String::toLowerCase).toList();
+            return listSkillName.stream().filter(i -> Collections.frequency(listSkillName, i) > 1).toList().size() <= 0;
+        }
     }
 }

@@ -5,13 +5,11 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Target({ElementType.FIELD})
-@Constraint(validatedBy = SkillValidator.class)
+@Target({ElementType.TYPE})
+@Constraint(validatedBy = DateTimeValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SkillNameDuplicate {
-    String message() default "Must be unique!";
-
-    boolean considerSkillLevel() default false;
+public @interface DateTimeCheck {
+    String message() default "";
 
     Class<?>[] groups() default {};
 
