@@ -109,4 +109,17 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberNotFound("Member does not exist!");
         }
     }
+
+    @Transactional
+    @Override
+    public void deleteMemberSkill(Long memberId, String skillName) {
+        Optional<Member> existingMember = memberRepository.findById(memberId);
+        Optional<Skill> skillToDelete = skillService.findSkillByName(skillName);
+        if (existingMember.isPresent() && skillToDelete.isPresent()) {
+            MemberSkill memberSkill = memberSkillService.findBySkillId(skillToDelete.get().getId());
+            memberSkillService.deleteById(memberSkill.getId());
+        } else {
+            throw new MemberNotFound("Does not exist!");
+        }
+    }
 }

@@ -14,12 +14,16 @@ public class Skill {
     private String name;
 
     @OneToMany(mappedBy = "skill")
-    private Set<MemberSkill> memberSkill = new HashSet<MemberSkill>();
+    private Set<MemberSkill> memberSkill = new HashSet<>();
 
-    public Skill(Long id, String name, Set<MemberSkill> memberSkill) {
+    @OneToMany(mappedBy = "skill")
+    private Set<HeistSkill> heistSkill = new HashSet<>();
+
+    public Skill(Long id, String name, Set<MemberSkill> memberSkill, Set<HeistSkill> heistSkill) {
         this.id = id;
         this.name = name;
         this.memberSkill = memberSkill;
+        this.heistSkill = heistSkill;
     }
 
     public Skill() {
@@ -48,6 +52,14 @@ public class Skill {
 
     public void setMemberSkill(Set<MemberSkill> skills) {
         this.memberSkill = skills;
+    }
+
+    public Set<HeistSkill> getHeistSkill() {
+        return heistSkill;
+    }
+
+    public void setHeistSkill(Set<HeistSkill> heistSkill) {
+        this.heistSkill = heistSkill;
     }
 
     @Override

@@ -5,6 +5,7 @@ import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.group.CreateMember;
 import ag04.project.moneyheist.api.group.UpdateMemberSkill;
 import ag04.project.moneyheist.services.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
@@ -33,5 +35,11 @@ public class MemberController {
         memberService.updateMember(memberCommand, memberId);
 
         return ResponseEntity.noContent().header("Content-Location", "/member/" + memberId + "/skills").build();
+    }
+
+    @DeleteMapping("{memberId}/skills/{skillName}")
+    public ResponseEntity<Void> deleteMemberSkills(@PathVariable Long memberId, @PathVariable String skillName) {
+        memberService.deleteMemberSkill(memberId, skillName);
+        return ResponseEntity.noContent().build();
     }
 }
