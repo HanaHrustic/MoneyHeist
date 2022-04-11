@@ -3,6 +3,7 @@ package ag04.project.moneyheist.services;
 import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberSkill;
 import ag04.project.moneyheist.repositories.MemberSkillRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class MemberSkillServiceImpl implements MemberSkillService {
 
     private final MemberSkillRepository memberSkillRepository;
 
+    @Autowired
     public MemberSkillServiceImpl(MemberSkillRepository memberSkillRepository) {
         this.memberSkillRepository = memberSkillRepository;
     }

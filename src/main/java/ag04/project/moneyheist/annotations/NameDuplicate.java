@@ -6,12 +6,10 @@ import java.lang.annotation.*;
 
 @Documented
 @Target({ElementType.FIELD})
-@Constraint(validatedBy = SkillValidator.class)
+@Constraint(validatedBy = NameValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SkillNameDuplicate {
+public @interface NameDuplicate {
     String message() default "Must be unique!";
-
-    boolean considerSkillLevel() default false;
 
     Class<?>[] groups() default {};
 
