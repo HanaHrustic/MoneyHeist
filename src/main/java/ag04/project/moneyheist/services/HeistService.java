@@ -7,4 +7,6 @@ public interface HeistService {
     boolean isDuplicateName(String name);
 
     HeistDTO addHeist(HeistCommand heistCommand);
+
+    void updateHeistSkills(HeistCommand heistCommand, Long memberId);
 }

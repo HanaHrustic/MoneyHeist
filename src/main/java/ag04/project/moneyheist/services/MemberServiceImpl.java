@@ -7,7 +7,7 @@ import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
 import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberSkill;
 import ag04.project.moneyheist.domain.Skill;
-import ag04.project.moneyheist.exceptions.MemberNotFound;
+import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.exceptions.SkillDoesNotExist;
 import ag04.project.moneyheist.repositories.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +106,7 @@ public class MemberServiceImpl implements MemberService {
                 throw new SkillDoesNotExist("Main skill is not part of Member Skills!");
             }
         } else {
-            throw new MemberNotFound("Member does not exist!");
+            throw new EntityNotFound("Member does not exist!");
         }
     }
 
@@ -119,7 +119,7 @@ public class MemberServiceImpl implements MemberService {
             MemberSkill memberSkill = memberSkillService.findBySkillId(skillToDelete.get().getId());
             memberSkillService.deleteById(memberSkill.getId());
         } else {
-            throw new MemberNotFound("Does not exist!");
+            throw new EntityNotFound("Does not exist!");
         }
     }
 }
