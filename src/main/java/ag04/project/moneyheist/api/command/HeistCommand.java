@@ -3,21 +3,30 @@ package ag04.project.moneyheist.api.command;
 import ag04.project.moneyheist.annotations.DateTimeCheck;
 import ag04.project.moneyheist.annotations.NameDuplicate;
 import ag04.project.moneyheist.annotations.SkillNameDuplicate;
+import ag04.project.moneyheist.api.group.CreateHeist;
+import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 
+import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @DateTimeCheck
 public class HeistCommand {
 
+    @Null(groups = UpdateHeistSkill.class)
     @NameDuplicate
     private String name;
 
+    @Null(groups = UpdateHeistSkill.class)
     private String location;
+
+    @Null(groups = UpdateHeistSkill.class)
     private LocalDateTime startTime;
+
+    @Null(groups = UpdateHeistSkill.class)
     private LocalDateTime endTime;
 
-    @SkillNameDuplicate(considerSkillLevel = true)
+    @SkillNameDuplicate(considerSkillLevel = true, groups = {UpdateHeistSkill.class, CreateHeist.class})
     private List<SkillCommand> skills;
 
     public HeistCommand(String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<SkillCommand> skills) {

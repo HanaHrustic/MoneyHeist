@@ -7,12 +7,19 @@ import ag04.project.moneyheist.api.converter.HeistToHeistDTO;
 import ag04.project.moneyheist.domain.Heist;
 import ag04.project.moneyheist.domain.HeistSkill;
 import ag04.project.moneyheist.domain.Skill;
+import ag04.project.moneyheist.exceptions.ActionNotFound;
+import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class HeistServiceImpl implements HeistService {
@@ -49,6 +56,43 @@ public class HeistServiceImpl implements HeistService {
         heistSkillService.save(savedHeist);
 
         return heistToHeistDTO.convert(savedHeist);
+    }
+
+    @Override
+    public void updateHeistSkills(HeistCommand heistCommand, Long memberId) {
+        Heist heistToUpdate = heistCommandToHeist.convert(heistCommand);
+
+        Optional<Heist> existingHeist = heistRepository.findById(memberId);
+
+        if (existingHeist.isPresent()) {
+            if (existingHeist.get().getStartTime().isAfter(LocalDateTime.now())) {
+                List<Skill> savedSkills = skillService.saveAllSkills(Stream.concat(heistToUpdate.getHeistSkills()
+                                .stream().map(HeistSkill::getSkill),
+                        existingHeist.get().getHeistSkills().stream().map(HeistSkill::getSkill)).collect(Collectors.toList()));
+                Set<HeistSkill> updatedHeistSkills = new HashSet<>();
+
+                existingHeist.get().getHeistSkills().forEach(heistSkill -> {
+                    heistToUpdate.getHeistSkills().stream()
+                            .filter(h -> h.equals(heistSkill))
+                            .findFirst().ifPresent(updatedSkill -> heistSkill.setMembers(updatedSkill.getMembers()));
+                    updatedHeistSkills.add(heistSkill);
+                });
+                updatedHeistSkills.addAll(heistToUpdate.getHeistSkills());
+
+                existingHeist.get().setHeistSkills(updatedHeistSkills.stream()
+                        .peek(heistSkill -> {
+                            heistSkill.setHeist(existingHeist.get());
+                            heistSkill.setSkill(savedSkills.stream().filter(skill -> skill.equals(heistSkill.getSkill()))
+                                    .findFirst().orElse(null));
+                        }).collect(Collectors.toList()));
+
+                heistSkillService.save(existingHeist.get());
+            } else {
+                throw new ActionNotFound("Heist has already begun!");
+            }
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
     }
 
     @Override

@@ -2,15 +2,14 @@ package ag04.project.moneyheist.controllers;
 
 import ag04.project.moneyheist.api.DTO.HeistDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
+import ag04.project.moneyheist.api.group.CreateHeist;
+import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 import ag04.project.moneyheist.services.HeistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -24,9 +23,16 @@ public class HeistController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveHeist(@Valid @RequestBody HeistCommand heistCommand) {
+    public ResponseEntity<Void> saveHeist(@Validated({CreateHeist.class}) @RequestBody HeistCommand heistCommand) {
         HeistDTO savedHeist = heistService.addHeist(heistCommand);
 
         return ResponseEntity.created(URI.create("/heist/" + savedHeist.getId().toString())).build();
+    }
+
+    @PatchMapping("{memberId}/skills")
+    public ResponseEntity<Void> updateHeistSkills(@Validated({UpdateHeistSkill.class}) @RequestBody HeistCommand heistCommand, @PathVariable Long memberId) {
+        heistService.updateHeistSkills(heistCommand, memberId);
+
+        return ResponseEntity.noContent().header("Content-Location", "/heist/" + memberId + "/skills").build();
     }
 }

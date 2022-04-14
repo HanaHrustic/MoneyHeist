@@ -17,9 +17,15 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(MemberNotFound.class)
+    @ExceptionHandler(EntityNotFound.class)
     public ResponseEntity<Object> handleMemberNotFound(RuntimeException ex, WebRequest request) {
 
         return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(ActionNotFound.class)
+    public ResponseEntity<Object> handleActionNotFound(RuntimeException ex, WebRequest request) {
+
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED, request);
     }
 }
