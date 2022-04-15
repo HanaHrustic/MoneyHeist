@@ -4,6 +4,7 @@ import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
 import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
+import ag04.project.moneyheist.domain.HeistSkill;
 import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberSkill;
 import ag04.project.moneyheist.domain.Skill;
@@ -121,5 +122,10 @@ public class MemberServiceImpl implements MemberService {
         } else {
             throw new EntityNotFound("Does not exist!");
         }
+    }
+
+    @Override
+    public List<Member> getAllMembersFromHeistSkill(List<HeistSkill> skills) {
+        return memberRepository.findByMemberBySkillNameIn(skills.stream().map(skill -> skill.getSkill().getName()).collect(Collectors.toList()));
     }
 }

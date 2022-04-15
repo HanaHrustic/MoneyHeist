@@ -1,12 +1,13 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.api.converter.HeistCommandToHeist;
+import ag04.project.moneyheist.api.converter.HeistSkillToHeistSkillDTO;
 import ag04.project.moneyheist.api.converter.HeistToHeistDTO;
-import ag04.project.moneyheist.domain.Heist;
-import ag04.project.moneyheist.domain.HeistSkill;
-import ag04.project.moneyheist.domain.Skill;
+import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
+import ag04.project.moneyheist.domain.*;
 import ag04.project.moneyheist.exceptions.ActionNotFound;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
@@ -28,14 +29,20 @@ public class HeistServiceImpl implements HeistService {
     private final HeistToHeistDTO heistToHeistDTO;
     private final SkillService skillService;
     private final HeistSkillService heistSkillService;
+    private final MemberService memberService;
+    private final HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO;
+    private final MemberToMemberDTO memberToMemberDTO;
 
     @Autowired
-    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService) {
+    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO) {
         this.heistRepository = heistRepository;
         this.heistCommandToHeist = heistCommandToHeist;
         this.heistToHeistDTO = heistToHeistDTO;
         this.skillService = skillService;
         this.heistSkillService = heistSkillService;
+        this.memberService = memberService;
+        this.heistSkillToHeistSkillDTO = heistSkillToHeistSkillDTO;
+        this.memberToMemberDTO = memberToMemberDTO;
     }
 
     @Override
@@ -93,6 +100,33 @@ public class HeistServiceImpl implements HeistService {
         } else {
             throw new EntityNotFound("Heist does not exist!");
         }
+    }
+
+    @Override
+    public EligibleMembersDTO getEligibleMembers(Long heistId) {
+        EligibleMembersDTO eligibleMembersDTO = new EligibleMembersDTO();
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            List<HeistSkill> heistSkills = heistById.get().getHeistSkills();
+
+            eligibleMembersDTO.setSkills(heistSkills.stream().map(heistSkillToHeistSkillDTO::convert).collect(Collectors.toList()));
+            List<Member> eligibleMembersToFilter = memberService.getAllMembersFromHeistSkill(heistSkills);
+            List<Member> eligibleMembers = eligibleMembersToFilter.stream().filter(member -> member.getMemberSkill().stream()
+                    .anyMatch(memberSkill -> {
+                        for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {
+                            if (heistSkill.getLevel().length() <= memberSkill.getSkillLevel().length()
+                                    && heistSkill.getSkill().getName().equals(memberSkill.getSkill().getName())) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })).filter(member -> member.getMemberStatus().equals(MemberStatus.AVAILABLE)
+                    || member.getMemberStatus().equals(MemberStatus.RETIRED)).toList();
+            eligibleMembersDTO.setMembers(eligibleMembers.stream().map(memberToMemberDTO::convert).collect(Collectors.toList()));
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+        return eligibleMembersDTO;
     }
 
     @Override

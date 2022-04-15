@@ -3,23 +3,13 @@ package ag04.project.moneyheist.api.DTO;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import java.util.List;
-
-public class MemberDTO {
-    private Long id;
-
+public class HeistSkillDTO {
     @JsonView(ReadEligibleMembers.class)
     private String name;
     @JsonView(ReadEligibleMembers.class)
-    private List<MemberSkillDTO> skills;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String level;
+    @JsonView(ReadEligibleMembers.class)
+    private Long members;
 
     public String getName() {
         return name;
@@ -29,11 +19,19 @@ public class MemberDTO {
         this.name = name;
     }
 
-    public List<MemberSkillDTO> getSkills() {
-        return skills;
+    public String getLevel() {
+        return level;
     }
 
-    public void setSkills(List<MemberSkillDTO> skills) {
-        this.skills = skills;
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getMembers() {
+        return members;
+    }
+
+    public void setMembers(Long members) {
+        this.members = members;
     }
 }
