@@ -4,7 +4,10 @@ import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.group.CreateMember;
 import ag04.project.moneyheist.api.group.UpdateMemberSkill;
+import ag04.project.moneyheist.api.view.GetMember;
+import ag04.project.moneyheist.api.view.GetMemberSkills;
 import ag04.project.moneyheist.services.MemberService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +47,17 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
+    @JsonView(GetMember.class)
     @GetMapping("{memberId}")
     public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long memberId) {
         MemberDTO memberDTO = memberService.getMemberById(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
+    }
+
+    @JsonView(GetMemberSkills.class)
+    @GetMapping("{memberId}/skills")
+    public ResponseEntity<MemberDTO> getMemberSkills(@PathVariable Long memberId) {
+        MemberDTO memberDTO = memberService.getMemberSkills(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
     }
 }

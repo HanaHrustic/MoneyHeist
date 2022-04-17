@@ -1,6 +1,7 @@
 package ag04.project.moneyheist.api.DTO;
 
 import ag04.project.moneyheist.api.view.GetMember;
+import ag04.project.moneyheist.api.view.GetMemberSkills;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import ag04.project.moneyheist.domain.MemberStatus;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,10 +20,10 @@ public class MemberDTO {
     @JsonView(GetMember.class)
     private String email;
 
-    @JsonView(ReadEligibleMembers.class)
+    @JsonView({ReadEligibleMembers.class, GetMember.class, GetMemberSkills.class})
     private List<MemberSkillDTO> skills;
 
-    @JsonView(GetMember.class)
+    @JsonView({GetMember.class, GetMemberSkills.class})
     private String mainSkill;
 
     @JsonView(GetMember.class)

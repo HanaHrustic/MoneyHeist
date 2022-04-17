@@ -22,4 +22,6 @@ public interface MemberService {
     List<Member> findAllByNames(List<String> names);
 
     MemberDTO getMemberById(Long memberId);
+
+    MemberDTO getMemberSkills(Long memberId);
 }

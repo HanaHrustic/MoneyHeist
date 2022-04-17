@@ -127,11 +127,24 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDTO getMemberById(Long memberId) {
         Optional<Member> memberById = memberRepository.findById(memberId);
-
-        MemberDTO memberDTO = memberToMemberDTO.convert(memberById.get());
-
-        return memberDTO;
+        if (memberById.isPresent()) {
+            return memberToMemberDTO.convert(memberById.get());
+        } else {
+            throw new EntityNotFound("Member does not exist!");
+        }
     }
+
+    @Override
+    public MemberDTO getMemberSkills(Long memberId) {
+        Optional<Member> memberById = memberRepository.findById(memberId);
+
+        if (memberById.isPresent()) {
+            return memberToMemberDTO.convert(memberById.get());
+        } else {
+            throw new EntityNotFound("Member does not exist!");
+        }
+    }
+
 
     @Override
     public List<Member> getAllMembersFromHeistSkill(List<HeistSkill> skills) {
