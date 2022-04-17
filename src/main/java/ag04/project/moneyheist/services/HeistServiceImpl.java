@@ -75,30 +75,34 @@ public class HeistServiceImpl implements HeistService {
         Optional<Heist> existingHeist = heistRepository.findById(memberId);
 
         if (existingHeist.isPresent()) {
-            if (existingHeist.get().getStartTime().isAfter(LocalDateTime.now())) {
-                List<Skill> savedSkills = skillService.saveAllSkills(Stream.concat(heistToUpdate.getHeistSkills()
-                                .stream().map(HeistSkill::getSkill),
-                        existingHeist.get().getHeistSkills().stream().map(HeistSkill::getSkill)).collect(Collectors.toList()));
-                Set<HeistSkill> updatedHeistSkills = new HashSet<>();
+            if (existingHeist.get().getHeistSkills().equals(HeistStatus.IN_PROGRESS)) {
+                if (existingHeist.get().getStartTime().isAfter(LocalDateTime.now())) {
+                    List<Skill> savedSkills = skillService.saveAllSkills(Stream.concat(heistToUpdate.getHeistSkills()
+                                    .stream().map(HeistSkill::getSkill),
+                            existingHeist.get().getHeistSkills().stream().map(HeistSkill::getSkill)).collect(Collectors.toList()));
+                    Set<HeistSkill> updatedHeistSkills = new HashSet<>();
 
-                existingHeist.get().getHeistSkills().forEach(heistSkill -> {
-                    heistToUpdate.getHeistSkills().stream()
-                            .filter(h -> h.equals(heistSkill))
-                            .findFirst().ifPresent(updatedSkill -> heistSkill.setMembers(updatedSkill.getMembers()));
-                    updatedHeistSkills.add(heistSkill);
-                });
-                updatedHeistSkills.addAll(heistToUpdate.getHeistSkills());
+                    existingHeist.get().getHeistSkills().forEach(heistSkill -> {
+                        heistToUpdate.getHeistSkills().stream()
+                                .filter(h -> h.equals(heistSkill))
+                                .findFirst().ifPresent(updatedSkill -> heistSkill.setMembers(updatedSkill.getMembers()));
+                        updatedHeistSkills.add(heistSkill);
+                    });
+                    updatedHeistSkills.addAll(heistToUpdate.getHeistSkills());
 
-                existingHeist.get().setHeistSkills(updatedHeistSkills.stream()
-                        .peek(heistSkill -> {
-                            heistSkill.setHeist(existingHeist.get());
-                            heistSkill.setSkill(savedSkills.stream().filter(skill -> skill.equals(heistSkill.getSkill()))
-                                    .findFirst().orElse(null));
-                        }).collect(Collectors.toList()));
+                    existingHeist.get().setHeistSkills(updatedHeistSkills.stream()
+                            .peek(heistSkill -> {
+                                heistSkill.setHeist(existingHeist.get());
+                                heistSkill.setSkill(savedSkills.stream().filter(skill -> skill.equals(heistSkill.getSkill()))
+                                        .findFirst().orElse(null));
+                            }).collect(Collectors.toList()));
 
-                heistSkillService.save(existingHeist.get());
+                    heistSkillService.save(existingHeist.get());
+                } else {
+                    throw new ActionNotFound("Heist has already begun!");
+                }
             } else {
-                throw new ActionNotFound("Heist has already begun!");
+                throw new ActionNotFound("Heist has already started!");
             }
         } else {
             throw new EntityNotFound("Heist does not exist!");
@@ -110,13 +114,17 @@ public class HeistServiceImpl implements HeistService {
         EligibleMembersDTO eligibleMembersDTO = new EligibleMembersDTO();
         Optional<Heist> heistById = heistRepository.findById(heistId);
         if (heistById.isPresent()) {
-            List<HeistSkill> heistSkills = heistById.get().getHeistSkills();
+            if (!heistById.get().getStatus().equals(HeistStatus.READY)) {
+                List<HeistSkill> heistSkills = heistById.get().getHeistSkills();
 
-            eligibleMembersDTO.setSkills(heistSkills.stream().map(heistSkillToHeistSkillDTO::convert).collect(Collectors.toList()));
-            List<Member> eligibleMembersToFilter = memberService.getAllMembersFromHeistSkill(heistSkills);
+                eligibleMembersDTO.setSkills(heistSkills.stream().map(heistSkillToHeistSkillDTO::convert).collect(Collectors.toList()));
+                List<Member> eligibleMembersToFilter = memberService.getAllMembersFromHeistSkill(heistSkills);
 
-            List<Member> eligibleMembers = filterMembersBySkillAndStatus(heistById, eligibleMembersToFilter);
-            eligibleMembersDTO.setMembers(eligibleMembers.stream().map(memberToMemberDTO::convert).collect(Collectors.toList()));
+                List<Member> eligibleMembers = filterMembersBySkillAndStatus(heistById, eligibleMembersToFilter);
+                eligibleMembersDTO.setMembers(eligibleMembers.stream().map(memberToMemberDTO::convert).collect(Collectors.toList()));
+            } else {
+                throw new ActionNotFound("Heist members have already been confirmed!");
+            }
         } else {
             throw new EntityNotFound("Heist does not exist!");
         }
