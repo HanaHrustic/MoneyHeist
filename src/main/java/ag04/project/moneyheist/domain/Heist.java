@@ -3,6 +3,7 @@ package ag04.project.moneyheist.domain;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Heist {
@@ -18,13 +19,21 @@ public class Heist {
     @OneToMany(mappedBy = "heist")
     private List<HeistSkill> heistSkills;
 
-    public Heist(Long id, String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<HeistSkill> heistSkills) {
+    @Enumerated(EnumType.STRING)
+    private HeistStatus status = HeistStatus.PLANNING;
+
+    @OneToMany(mappedBy = "heist")
+    private Set<MemberHeist> memberHeists;
+
+    public Heist(Long id, String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<HeistSkill> heistSkills, HeistStatus status, Set<MemberHeist> memberHeists) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.startTime = startTime;
         this.endTime = endTime;
         this.heistSkills = heistSkills;
+        this.status = status;
+        this.memberHeists = memberHeists;
     }
 
     public Heist() {
@@ -76,5 +85,21 @@ public class Heist {
 
     public void setHeistSkills(List<HeistSkill> heistSkills) {
         this.heistSkills = heistSkills;
+    }
+
+    public HeistStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HeistStatus status) {
+        this.status = status;
+    }
+
+    public Set<MemberHeist> getMemberHeists() {
+        return memberHeists;
+    }
+
+    public void setMemberHeists(Set<MemberHeist> memberHeists) {
+        this.memberHeists = memberHeists;
     }
 }

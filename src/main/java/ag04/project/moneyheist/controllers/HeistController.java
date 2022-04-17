@@ -3,6 +3,7 @@ package ag04.project.moneyheist.controllers;
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
+import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
 import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
@@ -44,6 +45,14 @@ public class HeistController {
     @GetMapping("{heistId}/eligible_members")
     public ResponseEntity<EligibleMembersDTO> getEligibleMembers(@PathVariable Long heistId) {
         EligibleMembersDTO eligibleMembersDTO = heistService.getEligibleMembers(heistId);
+
         return ResponseEntity.status(HttpStatus.OK).body(eligibleMembersDTO);
+    }
+
+    @PutMapping("{heistId}/members")
+    public ResponseEntity<Void> confirmMembersInHeist(@Validated({ConfirmMembersInHeist.class}) @RequestBody HeistCommand heistCommand, @PathVariable Long heistId) {
+        heistService.confirmMembersInHeist(heistCommand, heistId);
+
+        return ResponseEntity.noContent().header("Content-Location", "/heist/" + heistId + "/members").build();
     }
 }

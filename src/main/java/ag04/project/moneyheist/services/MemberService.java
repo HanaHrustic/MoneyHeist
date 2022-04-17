@@ -18,4 +18,6 @@ public interface MemberService {
     void deleteMemberSkill(Long memberId, String skillName);
 
     List<Member> getAllMembersFromHeistSkill(List<HeistSkill> heistSkills);
+
+    List<Member> findAllByNames(List<String> names);
 }

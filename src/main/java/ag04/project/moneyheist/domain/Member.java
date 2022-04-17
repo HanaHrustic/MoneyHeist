@@ -25,7 +25,10 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
-    public Member(Long id, String name, String sex, String email, Set<MemberSkill> memberSkill, Skill mainSkill, MemberStatus memberStatus) {
+    @OneToMany(mappedBy = "member")
+    private Set<MemberHeist> memberHeists = new HashSet<>();
+
+    public Member(Long id, String name, String sex, String email, Set<MemberSkill> memberSkill, Skill mainSkill, MemberStatus memberStatus, Set<MemberHeist> memberHeists) {
         this.id = id;
         this.name = name;
         this.sex = sex;
@@ -33,6 +36,7 @@ public class Member {
         this.memberSkill = memberSkill;
         this.mainSkill = mainSkill;
         this.memberStatus = memberStatus;
+        this.memberHeists = memberHeists;
     }
 
     public Member() {
@@ -93,5 +97,13 @@ public class Member {
 
     public void setMemberSkill(Set<MemberSkill> skills) {
         this.memberSkill = skills;
+    }
+
+    public Set<MemberHeist> getMemberHeists() {
+        return memberHeists;
+    }
+
+    public void setMemberHeists(Set<MemberHeist> memberHeists) {
+        this.memberHeists = memberHeists;
     }
 }

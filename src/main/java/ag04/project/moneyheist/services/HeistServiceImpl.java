@@ -9,6 +9,7 @@ import ag04.project.moneyheist.api.converter.HeistToHeistDTO;
 import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
 import ag04.project.moneyheist.domain.*;
 import ag04.project.moneyheist.exceptions.ActionNotFound;
+import ag04.project.moneyheist.exceptions.BadRequest;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,10 @@ public class HeistServiceImpl implements HeistService {
     private final MemberService memberService;
     private final HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO;
     private final MemberToMemberDTO memberToMemberDTO;
+    private final MemberHeistService memberHeistService;
 
     @Autowired
-    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO) {
+    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO, MemberHeistService memberHeistService) {
         this.heistRepository = heistRepository;
         this.heistCommandToHeist = heistCommandToHeist;
         this.heistToHeistDTO = heistToHeistDTO;
@@ -43,6 +45,7 @@ public class HeistServiceImpl implements HeistService {
         this.memberService = memberService;
         this.heistSkillToHeistSkillDTO = heistSkillToHeistSkillDTO;
         this.memberToMemberDTO = memberToMemberDTO;
+        this.memberHeistService = memberHeistService;
     }
 
     @Override
@@ -127,6 +130,36 @@ public class HeistServiceImpl implements HeistService {
             throw new EntityNotFound("Heist does not exist!");
         }
         return eligibleMembersDTO;
+    }
+
+    @Override
+    public void confirmMembersInHeist(HeistCommand heistCommand, Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            if (heistById.get().getStatus().equals(HeistStatus.PLANNING)) {
+                List<Member> membersFromCommand = memberService.findAllByNames(heistCommand.getMembers());
+
+                membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
+                        .anyMatch(memberSkill -> {
+                            for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {
+                                if (heistSkill.getLevel().length() <= memberSkill.getSkillLevel().length()
+                                        && heistSkill.getSkill().getName().equals(memberSkill.getSkill().getName())) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })).filter(member -> member.getMemberStatus().equals(MemberStatus.AVAILABLE)
+                        || member.getMemberStatus().equals(MemberStatus.RETIRED)).toList();
+                if (membersFromCommand.size() != heistCommand.getMembers().size()) {
+                    throw new BadRequest("Not all members are valid.");
+                }
+                heistById.get().setMemberHeists(new HashSet<>(memberHeistService.assignMemberToHeist(heistById.get(), membersFromCommand)));
+            } else {
+                throw new ActionNotFound("Heist status is not PLANNING!");
+            }
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
     }
 
     @Override

@@ -8,8 +8,8 @@ import ag04.project.moneyheist.domain.HeistSkill;
 import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberSkill;
 import ag04.project.moneyheist.domain.Skill;
+import ag04.project.moneyheist.exceptions.BadRequest;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
-import ag04.project.moneyheist.exceptions.SkillDoesNotExist;
 import ag04.project.moneyheist.repositories.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
                         .findFirst().orElse(null));
                 memberRepository.save(existingMember.get());
             } else if (memberToUpdate.getMainSkill() != null) {
-                throw new SkillDoesNotExist("Main skill is not part of Member Skills!");
+                throw new BadRequest("Main skill is not part of Member Skills!");
             }
         } else {
             throw new EntityNotFound("Member does not exist!");
@@ -127,5 +127,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<Member> getAllMembersFromHeistSkill(List<HeistSkill> skills) {
         return memberRepository.findByMemberBySkillNameIn(skills.stream().map(skill -> skill.getSkill().getName()).collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Member> findAllByNames(List<String> names) {
+        return memberRepository.findByNameIn(names);
     }
 }

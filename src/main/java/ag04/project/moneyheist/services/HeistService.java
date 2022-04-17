@@ -12,4 +12,6 @@ public interface HeistService {
     void updateHeistSkills(HeistCommand heistCommand, Long memberId);
 
     EligibleMembersDTO getEligibleMembers(Long heistId);
+
+    void confirmMembersInHeist(HeistCommand heistCommand, Long heistId);
 }

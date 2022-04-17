@@ -4,9 +4,7 @@ import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.command.SkillCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
 import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
-import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberSkill;
-import ag04.project.moneyheist.domain.MemberStatus;
 import ag04.project.moneyheist.domain.Skill;
 import ag04.project.moneyheist.repositories.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +15,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 class MemberServiceImplTest {
@@ -60,7 +59,7 @@ class MemberServiceImplTest {
         memberSkill.setId(1L);
         memberSkill.setSkill(skill);
         memberSkill.setSkillLevel("*******");
-        when(memberCommandToMember.convert(any())).thenReturn(new Member(1L, "name", "F", "gmail@gmail.com", Collections.singleton(memberSkill), skill, MemberStatus.valueOf("AVAILABLE")));
+        //when(memberCommandToMember.convert(any())).thenReturn(new Member(1L, "name", "F", "gmail@gmail.com", Collections.singleton(memberSkill), skill, MemberStatus.valueOf("AVAILABLE")));
 
         memberService.addMember(memberCommand);
 
