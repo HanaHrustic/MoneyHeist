@@ -55,4 +55,11 @@ public class HeistController {
 
         return ResponseEntity.noContent().header("Content-Location", "/heist/" + heistId + "/members").build();
     }
+
+    @PutMapping("{heistId}/start")
+    public ResponseEntity<Void> manualStartHeist(@PathVariable Long heistId) {
+        heistService.manualStartHeist(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).header("Location", "/heist/" + heistId + "/status").build();
+    }
 }

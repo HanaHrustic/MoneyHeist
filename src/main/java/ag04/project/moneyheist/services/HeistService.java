@@ -14,4 +14,6 @@ public interface HeistService {
     EligibleMembersDTO getEligibleMembers(Long heistId);
 
     void confirmMembersInHeist(HeistCommand heistCommand, Long heistId);
+
+    void manualStartHeist(Long heistId);
 }

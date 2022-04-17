@@ -114,17 +114,8 @@ public class HeistServiceImpl implements HeistService {
 
             eligibleMembersDTO.setSkills(heistSkills.stream().map(heistSkillToHeistSkillDTO::convert).collect(Collectors.toList()));
             List<Member> eligibleMembersToFilter = memberService.getAllMembersFromHeistSkill(heistSkills);
-            List<Member> eligibleMembers = eligibleMembersToFilter.stream().filter(member -> member.getMemberSkill().stream()
-                    .anyMatch(memberSkill -> {
-                        for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {
-                            if (heistSkill.getLevel().length() <= memberSkill.getSkillLevel().length()
-                                    && heistSkill.getSkill().getName().equals(memberSkill.getSkill().getName())) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })).filter(member -> member.getMemberStatus().equals(MemberStatus.AVAILABLE)
-                    || member.getMemberStatus().equals(MemberStatus.RETIRED)).toList();
+
+            List<Member> eligibleMembers = filterMembersBySkillAndStatus(heistById, eligibleMembersToFilter);
             eligibleMembersDTO.setMembers(eligibleMembers.stream().map(memberToMemberDTO::convert).collect(Collectors.toList()));
         } else {
             throw new EntityNotFound("Heist does not exist!");
@@ -139,27 +130,49 @@ public class HeistServiceImpl implements HeistService {
             if (heistById.get().getStatus().equals(HeistStatus.PLANNING)) {
                 List<Member> membersFromCommand = memberService.findAllByNames(heistCommand.getMembers());
 
-                membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
-                        .anyMatch(memberSkill -> {
-                            for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {
-                                if (heistSkill.getLevel().length() <= memberSkill.getSkillLevel().length()
-                                        && heistSkill.getSkill().getName().equals(memberSkill.getSkill().getName())) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })).filter(member -> member.getMemberStatus().equals(MemberStatus.AVAILABLE)
-                        || member.getMemberStatus().equals(MemberStatus.RETIRED)).toList();
+                membersFromCommand = filterMembersBySkillAndStatus(heistById, membersFromCommand);
                 if (membersFromCommand.size() != heistCommand.getMembers().size()) {
                     throw new BadRequest("Not all members are valid.");
                 }
                 heistById.get().setMemberHeists(new HashSet<>(memberHeistService.assignMemberToHeist(heistById.get(), membersFromCommand)));
+                heistById.get().setStatus(HeistStatus.READY);
+                heistRepository.save(heistById.get());
             } else {
                 throw new ActionNotFound("Heist status is not PLANNING!");
             }
         } else {
             throw new EntityNotFound("Heist does not exist!");
         }
+    }
+
+    @Override
+    public void manualStartHeist(Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            if (heistById.get().getStatus().equals(HeistStatus.READY)) {
+                heistById.get().setStatus(HeistStatus.IN_PROGRESS);
+                heistRepository.save(heistById.get());
+            } else {
+                throw new ActionNotFound("Heist status is not ready!");
+            }
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+    }
+
+    private List<Member> filterMembersBySkillAndStatus(Optional<Heist> heistById, List<Member> membersFromCommand) {
+        membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
+                .anyMatch(memberSkill -> {
+                    for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {
+                        if (heistSkill.getLevel().length() <= memberSkill.getSkillLevel().length()
+                                && heistSkill.getSkill().getName().equals(memberSkill.getSkill().getName())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })).filter(member -> member.getMemberStatus().equals(MemberStatus.AVAILABLE)
+                || member.getMemberStatus().equals(MemberStatus.RETIRED)).toList();
+        return membersFromCommand;
     }
 
     @Override
