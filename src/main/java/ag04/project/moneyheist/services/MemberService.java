@@ -20,4 +20,6 @@ public interface MemberService {
     List<Member> getAllMembersFromHeistSkill(List<HeistSkill> heistSkills);
 
     List<Member> findAllByNames(List<String> names);
+
+    MemberDTO getMemberById(Long memberId);
 }

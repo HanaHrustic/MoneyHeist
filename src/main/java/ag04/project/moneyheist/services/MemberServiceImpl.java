@@ -125,6 +125,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public MemberDTO getMemberById(Long memberId) {
+        Optional<Member> memberById = memberRepository.findById(memberId);
+
+        MemberDTO memberDTO = memberToMemberDTO.convert(memberById.get());
+
+        return memberDTO;
+    }
+
+    @Override
     public List<Member> getAllMembersFromHeistSkill(List<HeistSkill> skills) {
         return memberRepository.findByMemberBySkillNameIn(skills.stream().map(skill -> skill.getSkill().getName()).collect(Collectors.toList()));
     }

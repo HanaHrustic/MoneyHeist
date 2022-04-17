@@ -6,6 +6,7 @@ import ag04.project.moneyheist.api.group.CreateMember;
 import ag04.project.moneyheist.api.group.UpdateMemberSkill;
 import ag04.project.moneyheist.services.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,11 @@ public class MemberController {
     public ResponseEntity<Void> deleteMemberSkills(@PathVariable Long memberId, @PathVariable String skillName) {
         memberService.deleteMemberSkill(memberId, skillName);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("{memberId}")
+    public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long memberId) {
+        MemberDTO memberDTO = memberService.getMemberById(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
     }
 }
