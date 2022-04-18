@@ -9,6 +9,7 @@ import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
 import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 import ag04.project.moneyheist.api.view.GetHeist;
+import ag04.project.moneyheist.api.view.GetHeistStatus;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import ag04.project.moneyheist.services.HeistService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -89,5 +90,13 @@ public class HeistController {
         List<HeistSkillDTO> skillDTO = heistService.getHeistSkills(heistId);
 
         return ResponseEntity.status(HttpStatus.OK).body(skillDTO);
+    }
+
+    @JsonView(GetHeistStatus.class)
+    @GetMapping("{heistId}/status")
+    public ResponseEntity<HeistDTO> getHeistStatus(@PathVariable Long heistId) {
+        HeistDTO heistDTO = heistService.getHeistStatus(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(heistDTO);
     }
 }

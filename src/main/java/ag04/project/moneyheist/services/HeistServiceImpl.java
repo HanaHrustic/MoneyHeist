@@ -220,6 +220,16 @@ public class HeistServiceImpl implements HeistService {
         }
     }
 
+    @Override
+    public HeistDTO getHeistStatus(Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            return heistToHeistDTO.convert(heistById.get());
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+    }
+
     private List<Member> filterMembersBySkillAndStatus(Optional<Heist> heistById, List<Member> membersFromCommand) {
         membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
                 .anyMatch(memberSkill -> {

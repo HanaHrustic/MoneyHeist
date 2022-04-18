@@ -29,4 +29,6 @@ public interface HeistService {
     List<MemberDTO> getHeistMembers(Long heistId);
 
     List<HeistSkillDTO> getHeistSkills(Long heistId);
+
+    HeistDTO getHeistStatus(Long heistId);
 }

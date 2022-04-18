@@ -1,6 +1,7 @@
 package ag04.project.moneyheist.api.DTO;
 
 import ag04.project.moneyheist.api.view.GetHeist;
+import ag04.project.moneyheist.api.view.GetHeistStatus;
 import ag04.project.moneyheist.domain.HeistStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -25,7 +26,7 @@ public class HeistDTO {
     @JsonView(GetHeist.class)
     private List<HeistSkillDTO> skills;
 
-    @JsonView(GetHeist.class)
+    @JsonView({GetHeist.class, GetHeistStatus.class})
     private HeistStatus status;
 
     public Long getId() {
