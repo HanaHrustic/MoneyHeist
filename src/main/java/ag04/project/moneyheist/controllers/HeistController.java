@@ -6,6 +6,7 @@ import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
 import ag04.project.moneyheist.api.group.UpdateHeistSkill;
+import ag04.project.moneyheist.api.view.GetHeist;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import ag04.project.moneyheist.services.HeistService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -61,5 +62,13 @@ public class HeistController {
         heistService.manualStartHeist(heistId);
 
         return ResponseEntity.status(HttpStatus.OK).header("Location", "/heist/" + heistId + "/status").build();
+    }
+
+    @JsonView(GetHeist.class)
+    @GetMapping("{heistId}")
+    public ResponseEntity<HeistDTO> getHeistById(@PathVariable Long heistId) {
+        HeistDTO heistDTO = heistService.getHeistById(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(heistDTO);
     }
 }

@@ -21,4 +21,6 @@ public interface HeistService {
     void manualStartHeist(Long heistId);
 
     List<Heist> findHeistsForMemberId(Long memberId);
+
+    HeistDTO getHeistById(Long heistId);
 }
