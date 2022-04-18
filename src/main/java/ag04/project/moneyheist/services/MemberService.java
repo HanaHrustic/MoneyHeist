@@ -25,5 +25,5 @@ public interface MemberService {
 
     MemberDTO getMemberSkills(Long memberId);
 
-    List<Member> getAllMembersFromMemberHeist(Long heistId);
+    List<Member> getAllMembersFromHeist(Long heistId);
 }

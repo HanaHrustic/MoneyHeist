@@ -2,6 +2,7 @@ package ag04.project.moneyheist.controllers;
 
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
+import ag04.project.moneyheist.api.DTO.HeistSkillDTO;
 import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
@@ -80,5 +81,13 @@ public class HeistController {
         List<MemberDTO> memberDTO = heistService.getHeistMembers(heistId);
 
         return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
+    }
+
+    @JsonView(ReadEligibleMembers.class)
+    @GetMapping("{heistId}/skills")
+    public ResponseEntity<List<HeistSkillDTO>> getHeistSkills(@PathVariable Long heistId) {
+        List<HeistSkillDTO> skillDTO = heistService.getHeistSkills(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(skillDTO);
     }
 }
