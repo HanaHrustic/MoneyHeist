@@ -2,6 +2,7 @@ package ag04.project.moneyheist.services;
 
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
+import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.api.converter.HeistCommandToHeist;
 import ag04.project.moneyheist.api.converter.HeistSkillToHeistSkillDTO;
@@ -187,6 +188,21 @@ public class HeistServiceImpl implements HeistService {
         Optional<Heist> heistById = heistRepository.findById(heistId);
         if (heistById.isPresent()) {
             return heistToHeistDTO.convert(heistById.get());
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+    }
+
+    @Override
+    public List<MemberDTO> getHeistMembers(Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            if (!heistById.get().getStatus().equals(HeistStatus.PLANNING)) {
+                List<Member> members = memberService.getAllMembersFromMemberHeist(heistId);
+                return members.stream().map(memberToMemberDTO::convert).toList();
+            } else {
+                throw new ActionNotFound("Heist status is Planning.");
+            }
         } else {
             throw new EntityNotFound("Heist does not exist!");
         }

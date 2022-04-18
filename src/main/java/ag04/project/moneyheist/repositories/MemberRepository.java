@@ -18,4 +18,7 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
     List<Member> findByMemberBySkillNameIn(@Param("skills") List<String> skills);
 
     List<Member> findByNameIn(List<String> names);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM MEMBER WHERE ID IN (SELECT MEMBER_ID FROM MEMBER_HEIST JOIN HEIST ON HEIST.ID = MEMBER_HEIST.HEIST_ID WHERE HEIST.ID = :heistId)")
+    List<Member> findByHeistId(Long heistId);
 }

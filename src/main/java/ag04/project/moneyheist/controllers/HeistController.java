@@ -2,6 +2,7 @@ package ag04.project.moneyheist.controllers;
 
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
+import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/heist")
@@ -70,5 +72,13 @@ public class HeistController {
         HeistDTO heistDTO = heistService.getHeistById(heistId);
 
         return ResponseEntity.status(HttpStatus.OK).body(heistDTO);
+    }
+
+    @JsonView(ReadEligibleMembers.class)
+    @GetMapping("{heistId}/members")
+    public ResponseEntity<List<MemberDTO>> getHeistMembers(@PathVariable Long heistId) {
+        List<MemberDTO> memberDTO = heistService.getHeistMembers(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
     }
 }

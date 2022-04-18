@@ -2,6 +2,7 @@ package ag04.project.moneyheist.services;
 
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
+import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.HeistCommand;
 import ag04.project.moneyheist.domain.Heist;
 
@@ -23,4 +24,6 @@ public interface HeistService {
     List<Heist> findHeistsForMemberId(Long memberId);
 
     HeistDTO getHeistById(Long heistId);
+
+    List<MemberDTO> getHeistMembers(Long heistId);
 }

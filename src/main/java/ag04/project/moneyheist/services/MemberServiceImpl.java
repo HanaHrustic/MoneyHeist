@@ -145,6 +145,11 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    @Override
+    public List<Member> getAllMembersFromMemberHeist(Long heistId) {
+        return memberRepository.findByHeistId(heistId);
+    }
+
 
     @Override
     public List<Member> getAllMembersFromHeistSkill(List<HeistSkill> skills) {
