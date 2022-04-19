@@ -15,6 +15,7 @@ import ag04.project.moneyheist.exceptions.BadRequest;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -180,6 +181,21 @@ public class HeistServiceImpl implements HeistService {
     }
 
     @Override
+    public void manualEndHeist(Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            if (heistById.get().getStatus().equals(HeistStatus.IN_PROGRESS)) {
+                heistById.get().setStatus(HeistStatus.FINISHED);
+                heistRepository.save(heistById.get());
+            } else {
+                throw new ActionNotFound("Heist status is not IN_PROGRESS!");
+            }
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+    }
+
+    @Override
     public List<Heist> findHeistsForMemberId(Long memberId) {
         return heistRepository.findAllByMemberId(memberId);
     }
@@ -228,6 +244,22 @@ public class HeistServiceImpl implements HeistService {
         } else {
             throw new EntityNotFound("Heist does not exist!");
         }
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    @Override
+    public void automaticHeistStart() {
+        List<Heist> heists = heistRepository.findAllHeists();
+        heists.forEach(heist -> {
+            if (heist.getStartTime().isBefore(LocalDateTime.now())
+                    && heist.getStatus().equals(HeistStatus.READY)
+                    && heist.getEndTime().isAfter(LocalDateTime.now())) {
+                manualStartHeist(heist.getId());
+            } else if (heist.getEndTime().isBefore(LocalDateTime.now())
+                    && heist.getStatus().equals(HeistStatus.IN_PROGRESS)) {
+                manualEndHeist(heist.getId());
+            }
+        });
     }
 
     private List<Member> filterMembersBySkillAndStatus(Optional<Heist> heistById, List<Member> membersFromCommand) {

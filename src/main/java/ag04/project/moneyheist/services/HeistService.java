@@ -31,4 +31,8 @@ public interface HeistService {
     List<HeistSkillDTO> getHeistSkills(Long heistId);
 
     HeistDTO getHeistStatus(Long heistId);
+
+    void automaticHeistStart();
+
+    void manualEndHeist(Long heistId);
 }
