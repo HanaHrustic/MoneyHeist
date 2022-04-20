@@ -35,4 +35,6 @@ public interface HeistService {
     void automaticHeistStart();
 
     void manualEndHeist(Long heistId);
+
+    HeistDTO getHeistOutcome(Long heistId);
 }
