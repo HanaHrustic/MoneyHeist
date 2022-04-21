@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.Mail.EmailService;
 import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
@@ -24,14 +25,16 @@ public class MemberServiceImpl implements MemberService {
     private final MemberToMemberDTO memberToMemberDTO;
     private final SkillService skillService;
     private final MemberSkillService memberSkillService;
+    private final EmailService emailService;
 
     @Autowired
-    public MemberServiceImpl(MemberRepository memberRepository, MemberCommandToMember memberCommandToMember, MemberToMemberDTO memberToMemberDTO, SkillService skillService, MemberSkillService memberSkillService) {
+    public MemberServiceImpl(MemberRepository memberRepository, MemberCommandToMember memberCommandToMember, MemberToMemberDTO memberToMemberDTO, SkillService skillService, MemberSkillService memberSkillService, EmailService emailService) {
         this.memberRepository = memberRepository;
         this.memberCommandToMember = memberCommandToMember;
         this.memberToMemberDTO = memberToMemberDTO;
-        this.memberSkillService = memberSkillService;
         this.skillService = skillService;
+        this.memberSkillService = memberSkillService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -57,6 +60,9 @@ public class MemberServiceImpl implements MemberService {
         Member savedMember = memberRepository.save(memberToSave);
 
         memberSkillService.save(savedMember);
+
+        emailService.sendSimpleMessage(savedMember.getEmail(), "ADDED TO DATABASE",
+                "You have been added to participate in a possible future heists.");
 
         return memberToMemberDTO.convert(savedMember);
     }

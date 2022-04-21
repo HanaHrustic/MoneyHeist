@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.Mail.EmailService;
 import ag04.project.moneyheist.api.converter.HeistCommandToHeist;
 import ag04.project.moneyheist.api.converter.HeistSkillToHeistSkillDTO;
 import ag04.project.moneyheist.api.converter.HeistToHeistDTO;
@@ -44,12 +45,14 @@ class HeistServiceImplTest {
     MemberToMemberDTO memberToMemberDTO;
     @Mock
     MemberHeistService memberHeistService;
+    @Mock
+    EmailService emailService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        heistService = new HeistServiceImpl(heistRepository, heistCommandToHeist, heistToHeistDTO, skillService, heistSkillService, memberService, heistSkillToHeistSkillDTO, memberToMemberDTO, memberHeistService);
+        heistService = new HeistServiceImpl(heistRepository, heistCommandToHeist, heistToHeistDTO, skillService, heistSkillService, memberService, heistSkillToHeistSkillDTO, memberToMemberDTO, memberHeistService, emailService);
     }
 
     @Test

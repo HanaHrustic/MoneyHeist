@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.Mail.EmailService;
 import ag04.project.moneyheist.domain.Heist;
 import ag04.project.moneyheist.domain.Member;
 import ag04.project.moneyheist.domain.MemberHeist;
@@ -14,10 +15,12 @@ import java.util.List;
 @Service
 public class MemberHeistServiceImpl implements MemberHeistService {
     private final MemberHeistRepository memberHeistRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public MemberHeistServiceImpl(MemberHeistRepository memberHeistRepository) {
+    public MemberHeistServiceImpl(MemberHeistRepository memberHeistRepository, EmailService emailService) {
         this.memberHeistRepository = memberHeistRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -26,6 +29,8 @@ public class MemberHeistServiceImpl implements MemberHeistService {
         members.forEach(member -> {
             if (member.getMemberHeists().size() == 0) {
                 memberHeist.add(new MemberHeist(member, heist));
+                emailService.sendSimpleMessage(member.getEmail(), "ADDED TO HEIST",
+                        "You have been added to a heist.");
             } else {
                 throw new BadRequest("Member has already been confirmed on another heist!");
             }
