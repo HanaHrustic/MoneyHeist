@@ -4,25 +4,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class SkillDoesNotExist extends RuntimeException{
+public class BadRequest extends RuntimeException {
 
-    public SkillDoesNotExist() {
+    public BadRequest() {
         super();
     }
 
-    public SkillDoesNotExist(String message) {
+    public BadRequest(String message) {
         super(message);
     }
 
-    public SkillDoesNotExist(String message, Throwable cause) {
+    public BadRequest(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SkillDoesNotExist(Throwable cause) {
+    public BadRequest(Throwable cause) {
         super(cause);
     }
 
-    protected SkillDoesNotExist(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected BadRequest(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

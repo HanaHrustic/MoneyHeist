@@ -3,6 +3,7 @@ package ag04.project.moneyheist.api.command;
 import ag04.project.moneyheist.annotations.DateTimeCheck;
 import ag04.project.moneyheist.annotations.NameDuplicate;
 import ag04.project.moneyheist.annotations.SkillNameDuplicate;
+import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
 import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 
@@ -10,31 +11,36 @@ import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@DateTimeCheck
+@DateTimeCheck(groups = CreateHeist.class)
 public class HeistCommand {
 
-    @Null(groups = UpdateHeistSkill.class)
-    @NameDuplicate
+    @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
+    @NameDuplicate(groups = CreateHeist.class)
     private String name;
 
-    @Null(groups = UpdateHeistSkill.class)
+    @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
     private String location;
 
-    @Null(groups = UpdateHeistSkill.class)
+    @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
     private LocalDateTime startTime;
 
-    @Null(groups = UpdateHeistSkill.class)
+    @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
     private LocalDateTime endTime;
 
     @SkillNameDuplicate(considerSkillLevel = true, groups = {UpdateHeistSkill.class, CreateHeist.class})
+    @Null(groups = ConfirmMembersInHeist.class)
     private List<SkillCommand> skills;
 
-    public HeistCommand(String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<SkillCommand> skills) {
+    @Null(groups = {UpdateHeistSkill.class, CreateHeist.class})
+    private List<String> members;
+
+    public HeistCommand(String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<SkillCommand> skills, List<String> members) {
         this.name = name;
         this.location = location;
         this.startTime = startTime;
         this.endTime = endTime;
         this.skills = skills;
+        this.members = members;
     }
 
     public HeistCommand() {
@@ -78,5 +84,13 @@ public class HeistCommand {
 
     public void setSkills(List<SkillCommand> skills) {
         this.skills = skills;
+    }
+
+    public List<String> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<String> members) {
+        this.members = members;
     }
 }

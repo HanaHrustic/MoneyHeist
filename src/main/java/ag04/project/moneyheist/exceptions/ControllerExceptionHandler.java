@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(SkillDoesNotExist.class)
+    @ExceptionHandler(BadRequest.class)
     public ResponseEntity<Object> handleSkillDoesNotExist(RuntimeException ex, WebRequest request) {
 
         return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);

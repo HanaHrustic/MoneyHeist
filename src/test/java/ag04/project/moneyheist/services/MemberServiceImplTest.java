@@ -4,10 +4,7 @@ import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.command.SkillCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
 import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
-import ag04.project.moneyheist.domain.Member;
-import ag04.project.moneyheist.domain.MemberSkill;
-import ag04.project.moneyheist.domain.MemberStatus;
-import ag04.project.moneyheist.domain.Skill;
+import ag04.project.moneyheist.domain.*;
 import ag04.project.moneyheist.repositories.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -60,7 +60,7 @@ class MemberServiceImplTest {
         memberSkill.setId(1L);
         memberSkill.setSkill(skill);
         memberSkill.setSkillLevel("*******");
-        when(memberCommandToMember.convert(any())).thenReturn(new Member(1L, "name", "F", "gmail@gmail.com", Collections.singleton(memberSkill), skill, MemberStatus.valueOf("AVAILABLE")));
+        when(memberCommandToMember.convert(any())).thenReturn(new Member(1L, "name", "F", "gmail@gmail.com", Collections.singleton(memberSkill), skill, MemberStatus.valueOf("AVAILABLE"), null));
 
         memberService.addMember(memberCommand);
 
@@ -75,5 +75,12 @@ class MemberServiceImplTest {
         memberService.isDuplicateEmail("gmail@gmail.com");
 
         verify(memberRepository, times(1)).existsByEmail("gmail@gmail.com");
+    }
+
+    @Test
+    void getPossibleOutcome() {
+        memberService.getPossibleOutcome(Optional.of(new Heist(null, null, null, null, null, List.of(new HeistSkill(), new HeistSkill()), null, new HashSet<MemberHeist>(List.of(new MemberHeist(new Member(1L, null, null, null, null, null, null, null), new Heist()))), null)), 1f, 1f);
+
+        verify(memberRepository, times(1)).saveAll(any());
     }
 }
