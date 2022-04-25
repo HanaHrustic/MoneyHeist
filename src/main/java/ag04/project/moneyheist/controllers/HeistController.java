@@ -9,6 +9,7 @@ import ag04.project.moneyheist.api.group.ConfirmMembersInHeist;
 import ag04.project.moneyheist.api.group.CreateHeist;
 import ag04.project.moneyheist.api.group.UpdateHeistSkill;
 import ag04.project.moneyheist.api.view.GetHeist;
+import ag04.project.moneyheist.api.view.GetHeistOutcome;
 import ag04.project.moneyheist.api.view.GetHeistStatus;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import ag04.project.moneyheist.services.HeistService;
@@ -96,6 +97,14 @@ public class HeistController {
     @GetMapping("{heistId}/status")
     public ResponseEntity<HeistDTO> getHeistStatus(@PathVariable Long heistId) {
         HeistDTO heistDTO = heistService.getHeistStatus(heistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(heistDTO);
+    }
+
+    @JsonView(GetHeistOutcome.class)
+    @GetMapping("{heistId}/outcome")
+    public ResponseEntity<HeistDTO> getHeistOutcome(@PathVariable Long heistId) {
+        HeistDTO heistDTO = heistService.getHeistOutcome(heistId);
 
         return ResponseEntity.status(HttpStatus.OK).body(heistDTO);
     }

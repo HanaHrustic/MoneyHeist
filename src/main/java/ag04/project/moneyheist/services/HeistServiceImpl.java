@@ -19,10 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -196,6 +193,37 @@ public class HeistServiceImpl implements HeistService {
     }
 
     @Override
+    public HeistDTO getHeistOutcome(Long heistId) {
+        Optional<Heist> heistById = heistRepository.findById(heistId);
+        if (heistById.isPresent()) {
+            if (heistById.get().getStatus().equals(HeistStatus.FINISHED)) {
+                Float requiredMembers = Float.valueOf(heistById.get().getHeistSkills().stream().map(HeistSkill::getMembers).reduce(0L, Long::sum));
+                Float numberOfMembers = (float) heistById.get().getMemberHeists().size();
+                if (numberOfMembers >= requiredMembers) {
+                    heistById.get().setHeistOutcome(HeistOutcome.SUCCEEDED);
+                } else if ((numberOfMembers / requiredMembers < 1) && (numberOfMembers / requiredMembers >= 0.75)) {
+                    heistById.get().setHeistOutcome(HeistOutcome.SUCCEEDED);
+                } else if ((numberOfMembers / requiredMembers < 0.75) && (numberOfMembers / requiredMembers >= 0.50)) {
+                    if (new Random().nextDouble() <= 0.50) {
+                        heistById.get().setHeistOutcome(HeistOutcome.SUCCEEDED);
+                    } else {
+                        heistById.get().setHeistOutcome(HeistOutcome.FAILED);
+                    }
+                } else if ((numberOfMembers / requiredMembers < 0.50)) {
+                    heistById.get().setHeistOutcome(HeistOutcome.FAILED);
+                }
+                memberService.getPossibleOutcome(heistById, requiredMembers, numberOfMembers);
+                heistRepository.save(heistById.get());
+            } else {
+                throw new ActionNotFound("Heist status is not FINISHED.");
+            }
+        } else {
+            throw new EntityNotFound("Heist does not exist!");
+        }
+        return heistToHeistDTO.convert(heistById.get());
+    }
+
+    @Override
     public List<Heist> findHeistsForMemberId(Long memberId) {
         return heistRepository.findAllByMemberId(memberId);
     }
@@ -262,7 +290,8 @@ public class HeistServiceImpl implements HeistService {
         });
     }
 
-    private List<Member> filterMembersBySkillAndStatus(Optional<Heist> heistById, List<Member> membersFromCommand) {
+    private List<Member> filterMembersBySkillAndStatus
+            (Optional<Heist> heistById, List<Member> membersFromCommand) {
         membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
                 .anyMatch(memberSkill -> {
                     for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {

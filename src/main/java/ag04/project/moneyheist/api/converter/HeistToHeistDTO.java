@@ -29,6 +29,7 @@ public class HeistToHeistDTO implements Converter<Heist, HeistDTO> {
         heistDTO.setEndTime(source.getEndTime());
         heistDTO.setSkills(source.getHeistSkills().stream().map(heistSkillToHeistSkillDTO::convert).collect(Collectors.toList()));
         heistDTO.setStatus(source.getStatus());
+        heistDTO.setOutcome(source.getHeistOutcome());
 
         return heistDTO;
     }
