@@ -23,7 +23,11 @@ public class MemberToMemberDTO implements Converter<Member, MemberDTO> {
         final MemberDTO memberDto = new MemberDTO();
         memberDto.setId(source.getId());
         memberDto.setName(source.getName());
+        memberDto.setSex(source.getSex());
+        memberDto.setEmail(source.getEmail());
         memberDto.setSkills(source.getMemberSkill().stream().map(memberSkillToMemberSkillDTO::convert).collect(Collectors.toList()));
+        memberDto.setMainSkill(source.getMainSkill().getName());
+        memberDto.setStatus(source.getMemberStatus());
 
         return memberDto;
     }
