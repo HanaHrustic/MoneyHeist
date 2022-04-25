@@ -16,6 +16,7 @@ import ag04.project.moneyheist.exceptions.BadRequest;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +38,11 @@ public class HeistServiceImpl implements HeistService {
     private final MemberToMemberDTO memberToMemberDTO;
     private final MemberHeistService memberHeistService;
     private final EmailService emailService;
+    private final MemberSkillService memberSkillService;
+    private final Integer levelUpTime;
 
     @Autowired
-    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO, MemberHeistService memberHeistService, EmailService emailService) {
+    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO, MemberHeistService memberHeistService, EmailService emailService, MemberSkillService memberSkillService, @Value("${skill.levelUpTime}") Integer levelUpTime) {
         this.heistRepository = heistRepository;
         this.heistCommandToHeist = heistCommandToHeist;
         this.heistToHeistDTO = heistToHeistDTO;
@@ -50,6 +53,8 @@ public class HeistServiceImpl implements HeistService {
         this.memberToMemberDTO = memberToMemberDTO;
         this.memberHeistService = memberHeistService;
         this.emailService = emailService;
+        this.memberSkillService = memberSkillService;
+        this.levelUpTime = levelUpTime;
     }
 
     @Override
@@ -300,9 +305,27 @@ public class HeistServiceImpl implements HeistService {
                 manualStartHeist(heist.getId());
             } else if (heist.getEndTime().isBefore(LocalDateTime.now())
                     && heist.getStatus().equals(HeistStatus.IN_PROGRESS)) {
+                levelUpMembersSkillsInHeist(heist);
                 manualEndHeist(heist.getId());
             }
         });
+    }
+
+    private void levelUpMembersSkillsInHeist(Heist heist) {
+        LocalDateTime heistTime = heist.getEndTime().minusSeconds(heist.getStartTime().getSecond());
+        int levelUps = heistTime.getSecond() / levelUpTime;
+        List<String> heistSkills = heist.getHeistSkills().stream().map(heistSkill -> heistSkill.getSkill().getName()).toList();
+        List<MemberSkill> memberSkillsToLevelUp = heist.getMemberHeists().stream().map(MemberHeist::getMember)
+                .map(Member::getMemberSkill).flatMap(Collection::stream)
+                .filter(memberSkill -> heistSkills.contains(memberSkill.getSkill().getName())).toList();
+        memberSkillsToLevelUp.forEach(memberSkill -> {
+            if (memberSkill.getSkillLevel().length() + levelUps < 10) {
+                memberSkill.setSkillLevel("*".repeat(memberSkill.getSkillLevel().length() + levelUps));
+            } else {
+                memberSkill.setSkillLevel("**********");
+            }
+        });
+        memberSkillService.saveAll(memberSkillsToLevelUp);
     }
 
     private List<Member> filterMembersBySkillAndStatus

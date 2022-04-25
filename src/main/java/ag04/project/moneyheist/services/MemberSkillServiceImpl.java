@@ -33,4 +33,9 @@ public class MemberSkillServiceImpl implements MemberSkillService {
 
         return list.stream().filter(memberSkill1 -> memberSkill1.getSkill().getId().equals(skillId)).findFirst().orElse(null);
     }
+
+    @Override
+    public void saveAll(List<MemberSkill> memberSkill) {
+        memberSkillRepository.saveAll(memberSkill);
+    }
 }
