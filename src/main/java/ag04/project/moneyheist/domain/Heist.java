@@ -25,7 +25,9 @@ public class Heist {
     @OneToMany(mappedBy = "heist")
     private Set<MemberHeist> memberHeists;
 
-    public Heist(Long id, String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<HeistSkill> heistSkills, HeistStatus status, Set<MemberHeist> memberHeists) {
+    private HeistOutcome heistOutcome;
+
+    public Heist(Long id, String name, String location, LocalDateTime startTime, LocalDateTime endTime, List<HeistSkill> heistSkills, HeistStatus status, Set<MemberHeist> memberHeists, HeistOutcome heistOutcome) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -34,6 +36,7 @@ public class Heist {
         this.heistSkills = heistSkills;
         this.status = status;
         this.memberHeists = memberHeists;
+        this.heistOutcome = heistOutcome;
     }
 
     public Heist() {
@@ -101,5 +104,13 @@ public class Heist {
 
     public void setMemberHeists(Set<MemberHeist> memberHeists) {
         this.memberHeists = memberHeists;
+    }
+
+    public HeistOutcome getHeistOutcome() {
+        return heistOutcome;
+    }
+
+    public void setHeistOutcome(HeistOutcome heistOutcome) {
+        this.heistOutcome = heistOutcome;
     }
 }

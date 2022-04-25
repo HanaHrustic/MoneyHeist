@@ -11,11 +11,11 @@ import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@DateTimeCheck
+@DateTimeCheck(groups = CreateHeist.class)
 public class HeistCommand {
 
     @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
-    @NameDuplicate
+    @NameDuplicate(groups = CreateHeist.class)
     private String name;
 
     @Null(groups = {UpdateHeistSkill.class, ConfirmMembersInHeist.class})
