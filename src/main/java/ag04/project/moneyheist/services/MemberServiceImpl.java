@@ -4,10 +4,7 @@ import ag04.project.moneyheist.api.DTO.MemberDTO;
 import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
 import ag04.project.moneyheist.api.converter.MemberToMemberDTO;
-import ag04.project.moneyheist.domain.HeistSkill;
-import ag04.project.moneyheist.domain.Member;
-import ag04.project.moneyheist.domain.MemberSkill;
-import ag04.project.moneyheist.domain.Skill;
+import ag04.project.moneyheist.domain.*;
 import ag04.project.moneyheist.exceptions.BadRequest;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.MemberRepository;
@@ -15,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -159,5 +153,64 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<Member> findAllByNames(List<String> names) {
         return memberRepository.findByNameIn(names);
+    }
+
+    @Override
+    public void getPossibleOutcome(Optional<Heist> heistById, Float requiredMembers, Float numberOfMembers) {
+        if ((numberOfMembers / requiredMembers < 1) && (numberOfMembers / requiredMembers >= 0.75)) {
+            List<Member> membersToUpdate = getMembersToUpdateStatus(heistById, numberOfMembers, 1f);
+            membersToUpdate = membersToUpdate.stream()
+                    .peek(member -> member.setMemberStatus(MemberStatus.INCARCERATED)).collect(Collectors.toList());
+            memberRepository.saveAll(membersToUpdate);
+        } else if ((numberOfMembers / requiredMembers < 0.75) && (numberOfMembers / requiredMembers >= 0.50)) {
+            if (new Random().nextDouble() <= 0.50) {
+                List<Member> membersToUpdate = getMembersToUpdateStatus(heistById, numberOfMembers, 1f);
+                membersToUpdate = membersToUpdate.stream()
+                        .peek(this::setStatusEitherExpiredOrIncarcerated).toList();
+                memberRepository.saveAll(membersToUpdate);
+            } else {
+                List<Member> membersToUpdate = getMembersToUpdateStatus(heistById, numberOfMembers, 2f);
+                membersToUpdate = membersToUpdate.stream()
+                        .peek(this::setStatusEitherExpiredOrIncarcerated).toList();
+                memberRepository.saveAll(membersToUpdate);
+            }
+        } else if ((numberOfMembers / requiredMembers < 0.50)) {
+            List<Member> membersToUpdate = heistById.get().getMemberHeists().stream()
+                    .map(MemberHeist::getMember)
+                    .peek(this::setStatusEitherExpiredOrIncarcerated).toList();
+            memberRepository.saveAll(membersToUpdate);
+        }
+    }
+
+    private void setStatusEitherExpiredOrIncarcerated(Member memberToUpdate) {
+        if (new Random().nextDouble() <= 0.50) {
+            memberToUpdate.setMemberStatus(MemberStatus.INCARCERATED);
+        } else {
+            memberToUpdate.setMemberStatus(MemberStatus.EXPIRED);
+        }
+    }
+
+    private List<Member> getMembersToUpdateStatus(Optional<Heist> heistById, Float numberOfMembers, Float num) {
+        double numToIncarcerate = Math.ceil(numberOfMembers * (num / 3f));
+        List<Long> memberIds = heistById.get().getMemberHeists().stream().map(MemberHeist::getMember).map(Member::getId).collect(Collectors.toCollection(LinkedList::new));
+        List<Long> memberIdsToRemove = new ArrayList<>();
+        memberIdsToRemove = removeMemberIDFromList(memberIds, memberIdsToRemove, (int) numToIncarcerate);
+        List<Long> finalMemberIdsToRemove = memberIdsToRemove;
+        return heistById.get().getMemberHeists().stream()
+                .map(MemberHeist::getMember)
+                .filter(member -> finalMemberIdsToRemove.contains(member.getId())).toList();
+    }
+
+    public List<Long> removeMemberIDFromList(List<Long> memberIds, List<Long> memberIdsToRemove, Integer numToIncarcerate) {
+        Random rand = new Random();
+        if (memberIds.size() > 0) {
+            if (numToIncarcerate-- > 0) {
+                int randomIndex = rand.nextInt(memberIds.size());
+                memberIdsToRemove.add(memberIds.get(randomIndex));
+                memberIds.remove(randomIndex);
+                removeMemberIDFromList(memberIds, memberIdsToRemove, numToIncarcerate);
+            }
+        }
+        return memberIdsToRemove;
     }
 }

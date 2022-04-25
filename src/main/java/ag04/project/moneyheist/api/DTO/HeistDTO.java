@@ -1,7 +1,9 @@
 package ag04.project.moneyheist.api.DTO;
 
 import ag04.project.moneyheist.api.view.GetHeist;
+import ag04.project.moneyheist.api.view.GetHeistOutcome;
 import ag04.project.moneyheist.api.view.GetHeistStatus;
+import ag04.project.moneyheist.domain.HeistOutcome;
 import ag04.project.moneyheist.domain.HeistStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -28,6 +30,9 @@ public class HeistDTO {
 
     @JsonView({GetHeist.class, GetHeistStatus.class})
     private HeistStatus status;
+
+    @JsonView(GetHeistOutcome.class)
+    private HeistOutcome outcome;
 
     public Long getId() {
         return id;
@@ -83,5 +88,13 @@ public class HeistDTO {
 
     public void setStatus(HeistStatus status) {
         this.status = status;
+    }
+
+    public HeistOutcome getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(HeistOutcome outcome) {
+        this.outcome = outcome;
     }
 }

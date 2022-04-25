@@ -15,4 +15,7 @@ public interface HeistRepository extends CrudRepository<Heist, Long> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM Heist JOIN Member_Heist ON Heist.Id = Member_Heist.Heist_Id WHERE Member_Heist.Member_Id = :memberId")
     List<Heist> findAllByMemberId(@Param("memberId") Long memberId);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM Heist")
+    List<Heist> findAllHeists();
 }
