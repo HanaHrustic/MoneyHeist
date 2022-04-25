@@ -1,12 +1,14 @@
 package ag04.project.moneyheist.api.DTO;
 
+import ag04.project.moneyheist.api.view.GetMember;
+import ag04.project.moneyheist.api.view.GetMemberSkills;
 import ag04.project.moneyheist.api.view.ReadEligibleMembers;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class MemberSkillDTO {
-    @JsonView(ReadEligibleMembers.class)
+    @JsonView({ReadEligibleMembers.class, GetMember.class, GetMemberSkills.class})
     private String name;
-    @JsonView(ReadEligibleMembers.class)
+    @JsonView({ReadEligibleMembers.class, GetMember.class, GetMemberSkills.class})
     private String level;
 
     public String getName() {

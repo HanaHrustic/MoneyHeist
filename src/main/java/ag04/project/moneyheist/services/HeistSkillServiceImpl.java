@@ -1,9 +1,12 @@
 package ag04.project.moneyheist.services;
 
 import ag04.project.moneyheist.domain.Heist;
+import ag04.project.moneyheist.domain.HeistSkill;
 import ag04.project.moneyheist.repositories.HeistSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class HeistSkillServiceImpl implements HeistSkillService {
@@ -17,5 +20,10 @@ public class HeistSkillServiceImpl implements HeistSkillService {
     @Override
     public void save(Heist heist) {
         heistSkillRepository.saveAll(heist.getHeistSkills());
+    }
+
+    @Override
+    public List<HeistSkill> getAllSkillsFromHeist(Long heistId) {
+        return heistSkillRepository.findSkillsByHeistId(heistId);
     }
 }
