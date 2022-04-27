@@ -76,7 +76,7 @@ public class HeistServiceImpl implements HeistService {
 
         Heist savedHeist = heistRepository.save(heistToSave);
 
-        heistSkillService.save(savedHeist);
+        heistSkillService.saveAllHeistSkills(savedHeist);
 
         return heistToHeistDTO.convert(savedHeist);
     }
@@ -109,7 +109,7 @@ public class HeistServiceImpl implements HeistService {
                                     .findFirst().orElse(null));
                         }).collect(Collectors.toList()));
 
-                heistSkillService.save(existingHeist.get());
+                heistSkillService.saveAllHeistSkills(existingHeist.get());
             } else {
                 throw new ActionNotFound("Heist has already started!");
             }
@@ -328,8 +328,7 @@ public class HeistServiceImpl implements HeistService {
         memberSkillService.saveAll(memberSkillsToLevelUp);
     }
 
-    private List<Member> filterMembersBySkillAndStatus
-            (Optional<Heist> heistById, List<Member> membersFromCommand) {
+    private List<Member> filterMembersBySkillAndStatus(Optional<Heist> heistById, List<Member> membersFromCommand) {
         membersFromCommand = membersFromCommand.stream().filter(member -> member.getMemberSkill().stream()
                 .anyMatch(memberSkill -> {
                     for (HeistSkill heistSkill : heistById.get().getHeistSkills()) {

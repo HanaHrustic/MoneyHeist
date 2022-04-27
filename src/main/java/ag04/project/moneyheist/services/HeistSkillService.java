@@ -6,7 +6,7 @@ import ag04.project.moneyheist.domain.HeistSkill;
 import java.util.List;
 
 public interface HeistSkillService {
-    void save(Heist heist);
+    void saveAllHeistSkills(Heist heist);
 
     List<HeistSkill> getAllSkillsFromHeist(Long heistId);
 }
