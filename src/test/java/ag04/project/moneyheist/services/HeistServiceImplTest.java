@@ -10,14 +10,13 @@ import ag04.project.moneyheist.exceptions.ActionNotFound;
 import ag04.project.moneyheist.exceptions.EntityNotFound;
 import ag04.project.moneyheist.repositories.HeistRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -47,12 +46,14 @@ class HeistServiceImplTest {
     MemberHeistService memberHeistService;
     @Mock
     EmailService emailService;
+    @Mock
+    MemberSkillService memberSkillService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        heistService = new HeistServiceImpl(heistRepository, heistCommandToHeist, heistToHeistDTO, skillService, heistSkillService, memberService, heistSkillToHeistSkillDTO, memberToMemberDTO, memberHeistService, emailService);
+        heistService = new HeistServiceImpl(heistRepository, heistCommandToHeist, heistToHeistDTO, skillService, heistSkillService, memberService, heistSkillToHeistSkillDTO, memberToMemberDTO, memberHeistService, emailService, memberSkillService, 86400);
     }
 
     @Test
@@ -80,7 +81,7 @@ class HeistServiceImplTest {
 
             verify(heistRepository, times(1)).findById(anyLong());
             verify(heistRepository, never()).save(any(Heist.class));
-            verify(memberService, never()).getPossibleOutcome(any(), anyFloat(), anyFloat());
+            verifyNoInteractions(memberService);
         });
     }
 
@@ -143,5 +144,47 @@ class HeistServiceImplTest {
         verify(heistRepository, times(1)).save(any(Heist.class));
         verify(memberService, times(1)).getPossibleOutcome(any(), anyFloat(), anyFloat());
         verify(heistToHeistDTO, times(1)).convert(any(Heist.class));
+    }
+
+    @Test
+    @Disabled
+    void automaticHeistStart() {
+        List<Heist> heists = new ArrayList<>();
+        Heist heist = new Heist();
+        heist.setId(1L);
+        heist.setStartTime(LocalDateTime.now().minusSeconds(1));
+        heist.setEndTime(LocalDateTime.now().plusMinutes(1));
+        heist.setStatus(HeistStatus.READY);
+        heist.setHeistSkills(new ArrayList<>());
+        heist.setMemberHeists(new HashSet<>());
+        heists.add(heist);
+
+        when(heistRepository.findAllHeists()).thenReturn(heists);
+        when(heistRepository.findById(1L)).thenReturn(Optional.of(heist));
+
+        heistService.automaticHeistStart();
+
+        verify(heistService, times(1)).manualStartHeist(anyLong());
+    }
+
+    @Test
+    @Disabled
+    void automaticHeistEnd() {
+        List<Heist> heists = new ArrayList<>();
+        Heist heist = new Heist();
+        heist.setId(1L);
+        heist.setStartTime(LocalDateTime.now().minusSeconds(2));
+        heist.setEndTime(LocalDateTime.now().minusSeconds(1));
+        heist.setStatus(HeistStatus.IN_PROGRESS);
+        heist.setHeistSkills(new ArrayList<>());
+        heist.setMemberHeists(new HashSet<>());
+        heists.add(heist);
+
+        when(heistRepository.findAllHeists()).thenReturn(heists);
+        when(heistRepository.findById(1L)).thenReturn(Optional.of(heist));
+
+        heistService.automaticHeistStart();
+
+        verify(heistService, times(1)).manualEndHeist(anyLong());
     }
 }
