@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.Mail.EmailService;
 import ag04.project.moneyheist.api.DTO.EligibleMembersDTO;
 import ag04.project.moneyheist.api.DTO.HeistDTO;
 import ag04.project.moneyheist.api.DTO.HeistSkillDTO;
@@ -17,6 +18,7 @@ import ag04.project.moneyheist.repositories.HeistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,9 +36,10 @@ public class HeistServiceImpl implements HeistService {
     private final HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO;
     private final MemberToMemberDTO memberToMemberDTO;
     private final MemberHeistService memberHeistService;
+    private final EmailService emailService;
 
     @Autowired
-    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO, MemberHeistService memberHeistService) {
+    public HeistServiceImpl(HeistRepository heistRepository, HeistCommandToHeist heistCommandToHeist, HeistToHeistDTO heistToHeistDTO, SkillService skillService, HeistSkillService heistSkillService, MemberService memberService, HeistSkillToHeistSkillDTO heistSkillToHeistSkillDTO, MemberToMemberDTO memberToMemberDTO, MemberHeistService memberHeistService, EmailService emailService) {
         this.heistRepository = heistRepository;
         this.heistCommandToHeist = heistCommandToHeist;
         this.heistToHeistDTO = heistToHeistDTO;
@@ -46,6 +49,7 @@ public class HeistServiceImpl implements HeistService {
         this.heistSkillToHeistSkillDTO = heistSkillToHeistSkillDTO;
         this.memberToMemberDTO = memberToMemberDTO;
         this.memberHeistService = memberHeistService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -168,6 +172,11 @@ public class HeistServiceImpl implements HeistService {
         if (heistById.isPresent()) {
             if (heistById.get().getStatus().equals(HeistStatus.READY)) {
                 heistById.get().setStatus(HeistStatus.IN_PROGRESS);
+                List<Member> membersInHeist = heistById.get().getMemberHeists().stream().map(MemberHeist::getMember).toList();
+                membersInHeist.forEach(member -> {
+                    emailService.sendSimpleMessage(member.getEmail(), "HEIST HAS STARTED!",
+                            "Heist you have been assigned to has started! Gear up!");
+                });
                 heistRepository.save(heistById.get());
             } else {
                 throw new ActionNotFound("Heist status is not ready!");
@@ -183,6 +192,11 @@ public class HeistServiceImpl implements HeistService {
         if (heistById.isPresent()) {
             if (heistById.get().getStatus().equals(HeistStatus.IN_PROGRESS)) {
                 heistById.get().setStatus(HeistStatus.FINISHED);
+                List<Member> membersInHeist = heistById.get().getMemberHeists().stream().map(MemberHeist::getMember).toList();
+                membersInHeist.forEach(member -> {
+                    emailService.sendSimpleMessage(member.getEmail(), "HEIST HAS ENDED!",
+                            "Heist you have been assigned to has ended!");
+                });
                 heistRepository.save(heistById.get());
             } else {
                 throw new ActionNotFound("Heist status is not IN_PROGRESS!");
@@ -275,6 +289,7 @@ public class HeistServiceImpl implements HeistService {
     }
 
     @Scheduled(fixedDelay = 1000)
+    @Transactional
     @Override
     public void automaticHeistStart() {
         List<Heist> heists = heistRepository.findAllHeists();

@@ -1,5 +1,6 @@
 package ag04.project.moneyheist.services;
 
+import ag04.project.moneyheist.Mail.EmailService;
 import ag04.project.moneyheist.api.command.MemberCommand;
 import ag04.project.moneyheist.api.command.SkillCommand;
 import ag04.project.moneyheist.api.converter.MemberCommandToMember;
@@ -39,11 +40,14 @@ class MemberServiceImplTest {
     @Mock
     MemberSkillService memberSkillService;
 
+    @Mock
+    EmailService emailService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        memberService = new MemberServiceImpl(memberRepository, memberCommandToMember, memberToMemberDTO, skillService, memberSkillService);
+        memberService = new MemberServiceImpl(memberRepository, memberCommandToMember, memberToMemberDTO, skillService, memberSkillService, emailService);
     }
 
     @Test
