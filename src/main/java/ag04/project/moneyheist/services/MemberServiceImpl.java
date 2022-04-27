@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(memberToSave);
 
-        memberSkillService.save(savedMember);
+        memberSkillService.saveAllMemberSkill(savedMember);
 
         emailService.sendSimpleMessage(savedMember.getEmail(), "ADDED TO DATABASE",
                 "You have been added to participate in a possible future heists.");
@@ -96,7 +96,7 @@ public class MemberServiceImpl implements MemberService {
             existingMember.get().setMemberSkill(updatedMemberSkills.stream()
                     .peek(memberSkill -> memberSkill.setMember(existingMember.get())).collect(Collectors.toSet()));
 
-            memberSkillService.save(existingMember.get());
+            memberSkillService.saveAllMemberSkill(existingMember.get());
 
             if (savedSkills.contains(memberToUpdate.getMainSkill())) {
                 existingMember.get().setMainSkill(savedSkills.stream()
