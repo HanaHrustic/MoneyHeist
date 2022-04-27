@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MemberSkillService {
 
-    void save(Member member);
+    void saveAllMemberSkill(Member member);
 
     void deleteById(Long id);
 

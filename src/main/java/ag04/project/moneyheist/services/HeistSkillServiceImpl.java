@@ -18,7 +18,7 @@ public class HeistSkillServiceImpl implements HeistSkillService {
     }
 
     @Override
-    public void save(Heist heist) {
+    public void saveAllHeistSkills(Heist heist) {
         heistSkillRepository.saveAll(heist.getHeistSkills());
     }
 

@@ -19,7 +19,7 @@ public class MemberSkillServiceImpl implements MemberSkillService {
     }
 
     @Override
-    public void save(Member member) {
+    public void saveAllMemberSkill(Member member) {
         memberSkillRepository.saveAll(member.getMemberSkill());
     }
 
